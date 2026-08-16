@@ -17,7 +17,7 @@ import { useProduct, useReviews, useUpdateProduct } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 
-export const Route = createFileRoute("/product/")({
+export const Route = createFileRoute("/product/$id")({
   head: () => ({
     meta: [
       { title: "Product details — Shelf" },
