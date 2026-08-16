@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AddRouteImport } from './routes/add'
+import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as ProductRouteImport } from './routes/product.'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const AddRoute = AddRouteImport.update({
   id: '/add',
   path: '/add',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InsightsRoute = InsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -38,12 +44,14 @@ const ProductRoute = ProductRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/add': typeof AddRoute
+  '/insights': typeof InsightsRoute
   '/onboarding': typeof OnboardingRoute
   '/product/': typeof ProductRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/add': typeof AddRoute
+  '/insights': typeof InsightsRoute
   '/onboarding': typeof OnboardingRoute
   '/product': typeof ProductRoute
 }
@@ -51,20 +59,22 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/add': typeof AddRoute
+  '/insights': typeof InsightsRoute
   '/onboarding': typeof OnboardingRoute
   '/product/': typeof ProductRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/add' | '/onboarding' | '/product/'
+  fullPaths: '/' | '/add' | '/insights' | '/onboarding' | '/product/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/add' | '/onboarding' | '/product'
-  id: '__root__' | '/' | '/add' | '/onboarding' | '/product/'
+  to: '/' | '/add' | '/insights' | '/onboarding' | '/product'
+  id: '__root__' | '/' | '/add' | '/insights' | '/onboarding' | '/product/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AddRoute: typeof AddRoute
+  InsightsRoute: typeof InsightsRoute
   OnboardingRoute: typeof OnboardingRoute
   ProductRoute: typeof ProductRoute
 }
@@ -83,6 +93,13 @@ declare module '@tanstack/react-router' {
       path: '/add'
       fullPath: '/add'
       preLoaderRoute: typeof AddRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/insights': {
+      id: '/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof InsightsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -105,6 +122,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddRoute: AddRoute,
+  InsightsRoute: InsightsRoute,
   OnboardingRoute: OnboardingRoute,
   ProductRoute: ProductRoute,
 }
