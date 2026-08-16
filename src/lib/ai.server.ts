@@ -171,3 +171,127 @@ Rules:
     rationale: str(parsed["rationale"]) ?? "",
   };
 }
+
+function coerceItem(raw: Record<string, unknown>): BulkItem {
+  const category = str(raw["category"])?.toLowerCase() ?? null;
+  const ingredientsRaw = Array.isArray(raw["ingredients"]) ? raw["ingredients"] : [];
+  const ingredients = ingredientsRaw
+    .map((i) => (typeof i === "string" ? i.trim() : ""))
+    .filter((i) => i.length > 1)
+    .slice(0, 120);
+  return {
+    brand: str(raw["brand"]),
+    name: str(raw["name"]),
+    category: category && CATEGORIES.includes(category) ? category : null,
+    size_ml: num(raw["size_ml"]),
+    pao_months: num(raw["pao_months"]),
+    ingredients,
+    ingredients_readable: ingredients.length > 0,
+    notes: str(raw["notes"]),
+    position: str(raw["position"]),
+  };
+}
+
+export async function extractProductsFromShelfPhoto(image: string): Promise<BulkItem[]> {
+  const raw = await callGateway({
+    model: "google/gemini-3.6-flash",
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: `You read a photo containing SEVERAL beauty products lined up together. Identify every distinct product bottle, tube, jar or compact you can see.
+
+Return ONLY strict JSON of this shape:
+{"products": [{"brand": string|null, "name": string|null, "category": one of ${CATEGORIES.join("|")}|null, "size_ml": number|null, "pao_months": number|null, "ingredients": string[], "notes": string|null, "position": string|null}]}
+
+Rules:
+- One array entry per physical product, ordered left to right as they appear.
+- "position" is a short human hint for where it is, e.g. "tall white bottle, second from left".
+- Only report what is legibly visible. Unclear field -> null. NEVER guess or invent a brand, name or ingredient.
+- Ingredient lists are rarely legible in a group shot; return [] unless you can genuinely read them.
+- Skip objects that are not beauty products.`,
+          },
+          { type: "image_url", image_url: { url: image } },
+        ],
+      },
+    ],
+  });
+  const parsed = parseJson(raw);
+  const list = Array.isArray(parsed?.["products"]) ? (parsed["products"] as unknown[]) : [];
+  return list
+    .filter((p): p is Record<string, unknown> => !!p && typeof p === "object")
+    .map(coerceItem)
+    .filter((p) => p.brand || p.name)
+    .slice(0, 20);
+}
+
+export async function bulkChatTurn(
+  items: BulkItem[],
+  history: BulkChatTurn[],
+): Promise<BulkChatResult> {
+  const inventory = items.map((it, i) => ({
+    index: i,
+    brand: it.brand,
+    name: it.name,
+    category: it.category,
+    size_ml: it.size_ml,
+    pao_months: it.pao_months,
+    position: it.position,
+  }));
+
+  const raw = await callGateway({
+    model: "google/gemini-3.6-flash",
+    messages: [
+      {
+        role: "system",
+        content: `You are Shelf's warm, concise assistant. The user photographed several beauty products at once and some details could not be read. Your job is to fill the gaps conversationally.
+
+Current draft inventory (JSON): ${JSON.stringify(inventory)}
+Valid categories: ${CATEGORIES.join(", ")}
+
+Rules:
+- Ask about ONE product at a time, naming it by brand/name or its "position" hint. Ask for at most two missing fields per message.
+- Missing fields that matter: brand, name, category. size_ml and pao_months are nice to have.
+- When the user answers, record it as an update. Never invent values the user did not give.
+- If the user says they don't know or to skip, move on.
+- Keep replies to 1-2 short sentences, British English, no emoji.
+- Set "done" to true only when nothing important is missing or the user asks to finish.
+
+Return ONLY strict JSON:
+{"reply": string, "updates": [{"index": number, "patch": {"brand"?: string, "name"?: string, "category"?: string, "size_ml"?: number, "pao_months"?: number}}], "done": boolean}`,
+      },
+      ...history.map((h) => ({ role: h.role, content: h.content })),
+    ],
+  });
+
+  const parsed = parseJson(raw);
+  const updatesRaw = Array.isArray(parsed?.["updates"]) ? (parsed["updates"] as unknown[]) : [];
+  const updates: BulkChatResult["updates"] = [];
+  for (const u of updatesRaw) {
+    if (!u || typeof u !== "object") continue;
+    const rec = u as Record<string, unknown>;
+    const index = typeof rec["index"] === "number" ? rec["index"] : -1;
+    if (index < 0 || index >= items.length) continue;
+    const patchRaw = (rec["patch"] ?? {}) as Record<string, unknown>;
+    const patch: Partial<BulkItem> = {};
+    const brand = str(patchRaw["brand"]);
+    const name = str(patchRaw["name"]);
+    const cat = str(patchRaw["category"])?.toLowerCase() ?? null;
+    if (brand) patch.brand = brand;
+    if (name) patch.name = name;
+    if (cat && CATEGORIES.includes(cat)) patch.category = cat;
+    const size = num(patchRaw["size_ml"]);
+    if (size) patch.size_ml = size;
+    const pao = num(patchRaw["pao_months"]);
+    if (pao) patch.pao_months = pao;
+    if (Object.keys(patch).length) updates.push({ index, patch });
+  }
+
+  return {
+    reply: str(parsed?.["reply"]) ?? "Sorry, could you say that another way?",
+    updates,
+    done: parsed?.["done"] === true,
+  };
+}
