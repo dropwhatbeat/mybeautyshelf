@@ -325,7 +325,7 @@ function BulkAdd() {
                     <div className="space-y-1.5">
                       <Label className="text-xs text-muted-foreground">Category</Label>
                       <Select
-                        value={it.category ?? undefined}
+                        {...(it.category ? { value: it.category } : {})}
                         onValueChange={(v) => patch(i, { category: v })}
                       >
                         <SelectTrigger className="h-11 w-full capitalize">
