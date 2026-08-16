@@ -19,6 +19,16 @@ export type ColourAnalysis = {
   rationale: string;
 };
 
+export type BulkItem = ProductExtraction & { position: string | null };
+
+export type BulkChatTurn = { role: "user" | "assistant"; content: string };
+
+export type BulkChatResult = {
+  reply: string;
+  updates: { index: number; patch: Partial<BulkItem> }[];
+  done: boolean;
+};
+
 const CATEGORIES = ["cleanser", "serum", "moisturiser", "spf", "treatment", "makeup", "other"];
 
 async function callGateway(body: unknown): Promise<string> {
