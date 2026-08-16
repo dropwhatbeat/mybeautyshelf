@@ -11,7 +11,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { analyseColour } from "@/lib/ai.functions";
 import { fileToCompressedDataUrl } from "@/lib/image";
 import { supabase } from "@/integrations/supabase/client";
-import type { ColourAnalysis } from "@/lib/ai.server";
+
+type ColourAnalysis = {
+  season: string;
+  undertone: string;
+  best_colours: string[];
+  avoid_colours: string[];
+  rationale: string;
+};
 
 export const Route = createFileRoute("/colour")({
   head: () => ({
@@ -54,7 +61,7 @@ function Colour() {
       setResult(res);
       await supabase
         .from("profiles")
-        .update({ season: res.season, undertone_ai: res.undertone })
+        .update({ season_result: res.season, season_payload: res as unknown as Record<string, unknown> })
         .eq("id", user.id);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "That didn't work — try again.");
