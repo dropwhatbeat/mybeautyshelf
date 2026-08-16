@@ -14,6 +14,7 @@ import { Route as AddRouteImport } from './routes/add'
 import { Route as ColourRouteImport } from './routes/colour'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +42,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductIdRoute = ProductIdRouteImport.update({
   id: '/product/$id',
   path: '/product/$id',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/colour': typeof ColourRoute
   '/insights': typeof InsightsRoute
   '/onboarding': typeof OnboardingRoute
+  '/settings': typeof SettingsRoute
   '/product/$id': typeof ProductIdRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/colour': typeof ColourRoute
   '/insights': typeof InsightsRoute
   '/onboarding': typeof OnboardingRoute
+  '/settings': typeof SettingsRoute
   '/product/$id': typeof ProductIdRoute
 }
 export interface FileRoutesById {
@@ -70,14 +78,28 @@ export interface FileRoutesById {
   '/colour': typeof ColourRoute
   '/insights': typeof InsightsRoute
   '/onboarding': typeof OnboardingRoute
+  '/settings': typeof SettingsRoute
   '/product/$id': typeof ProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/add' | '/colour' | '/insights' | '/onboarding' | '/product/$id'
+    | '/'
+    | '/add'
+    | '/colour'
+    | '/insights'
+    | '/onboarding'
+    | '/settings'
+    | '/product/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/add' | '/colour' | '/insights' | '/onboarding' | '/product/$id'
+  to:
+    | '/'
+    | '/add'
+    | '/colour'
+    | '/insights'
+    | '/onboarding'
+    | '/settings'
+    | '/product/$id'
   id:
     | '__root__'
     | '/'
@@ -85,6 +107,7 @@ export interface FileRouteTypes {
     | '/colour'
     | '/insights'
     | '/onboarding'
+    | '/settings'
     | '/product/$id'
   fileRoutesById: FileRoutesById
 }
@@ -94,6 +117,7 @@ export interface RootRouteChildren {
   ColourRoute: typeof ColourRoute
   InsightsRoute: typeof InsightsRoute
   OnboardingRoute: typeof OnboardingRoute
+  SettingsRoute: typeof SettingsRoute
   ProductIdRoute: typeof ProductIdRoute
 }
 
@@ -134,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$id': {
       id: '/product/$id'
       path: '/product/$id'
@@ -150,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   ColourRoute: ColourRoute,
   InsightsRoute: InsightsRoute,
   OnboardingRoute: OnboardingRoute,
+  SettingsRoute: SettingsRoute,
   ProductIdRoute: ProductIdRoute,
 }
 export const routeTree = rootRouteImport

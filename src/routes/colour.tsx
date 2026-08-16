@@ -61,7 +61,7 @@ function Colour() {
       setResult(res);
       await supabase
         .from("profiles")
-        .update({ season_result: res.season, season_payload: res as unknown as Record<string, unknown> })
+        .update({ season_result: res.season, season_payload: JSON.parse(JSON.stringify(res)) })
         .eq("id", user.id);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "That didn't work — try again.");

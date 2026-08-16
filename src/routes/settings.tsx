@@ -35,9 +35,11 @@ function Settings() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: profile } = useProfile(user?.id);
-  const { theme, setTheme } = useTheme();
+  const { theme, toggle } = useTheme();
 
-  async function patch(patchData: Record<string, unknown>) {
+  type ProfileUpdate = Database["public"]["Tables"]["profiles"]["Update"];
+
+  async function patch(patchData: ProfileUpdate) {
     if (!user) return;
     const { error } = await supabase.from("profiles").update(patchData).eq("id", user.id);
     if (error) {
@@ -67,7 +69,7 @@ function Settings() {
 
   return (
     <AppShell>
-      <PageHeader title="Settings" subtitle={user?.email ?? undefined} />
+      <PageHeader title="Settings" {...(user?.email ? { subtitle: user.email } : {})} />
 
       <div className="space-y-5 px-5">
         <section className="rounded-2xl border border-border bg-card p-4">
@@ -130,7 +132,7 @@ function Settings() {
           </div>
           <Switch
             checked={theme === "dark"}
-            onCheckedChange={(on) => setTheme(on ? "dark" : "light")}
+            onCheckedChange={() => toggle()}
           />
         </section>
 
