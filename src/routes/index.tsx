@@ -1,24 +1,125 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { Plus } from "lucide-react";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { AppShell, PageHeader } from "@/components/AppShell";
+import { AuthCard } from "@/components/AuthCard";
+import { ProductCard } from "@/components/ProductCard";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/hooks/useAuth";
+import { freshnessFor } from "@/lib/freshness";
+import { useProducts, useProfile } from "@/lib/queries";
+import { cn } from "@/lib/utils";
+
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "Your shelf — Shelf" },
+      {
+        name: "description",
+        content: "Every skincare and makeup product you own, with freshness at a glance.",
+      },
+      { property: "og:title", content: "Your shelf — Shelf" },
+      {
+        property: "og:description",
+        content: "Every skincare and makeup product you own, with freshness at a glance.",
+      },
+    ],
+  }),
+  component: ShelfPage,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+type Sort = "expiring" | "recent" | "category";
+
+const SORTS: { key: Sort; label: string }[] = [
+  { key: "expiring", label: "Expiring soonest" },
+  { key: "recent", label: "Recently added" },
+  { key: "category", label: "Category" },
+];
+
+function ShelfPage() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const { data: profile } = useProfile(user?.id);
+  const { data: products, isLoading } = useProducts(user?.id);
+  const [sort, setSort] = useState<Sort>("expiring");
+
+  useEffect(() => {
+    if (profile && !profile.onboarded) void navigate({ to: "/onboarding" });
+  }, [profile, navigate]);
+
+  const sorted = useMemo(() => {
+    const list = (products ?? []).filter((p) => p.status === "active");
+    if (sort === "recent") return list;
+    if (sort === "category")
+      return [...list].sort((a, b) => a.category.localeCompare(b.category));
+    return [...list].sort((a, b) => {
+      const av = freshnessFor(a.date_opened, a.pao_months).daysRemaining ?? 99_999;
+      const bv = freshnessFor(b.date_opened, b.pao_months).daysRemaining ?? 99_999;
+      return av - bv;
+    });
+  }, [products, sort]);
+
+  if (loading) return <div className="min-h-screen bg-background" />;
+  if (!user) return <AuthCard />;
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+    <AppShell>
+      <PageHeader
+        title="Your shelf"
+        subtitle={
+          sorted.length ? `${sorted.length} products in rotation` : "Nothing here yet"
+        }
+        action={
+          <Button asChild size="icon" className="mt-1 h-11 w-11 rounded-full">
+            <Link to="/add" aria-label="Add product">
+              <Plus className="h-5 w-5" />
+            </Link>
+          </Button>
+        }
       />
-    </div>
+
+      <div className="flex gap-2 overflow-x-auto px-5 pb-4">
+        {SORTS.map((s) => (
+          <button
+            key={s.key}
+            onClick={() => setSort(s.key)}
+            className={cn(
+              "whitespace-nowrap rounded-full border px-3.5 py-1.5 text-xs transition-colors",
+              sort === s.key
+                ? "border-foreground bg-foreground text-background"
+                : "border-border text-muted-foreground",
+            )}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+      {isLoading ? (
+        <div className="grid grid-cols-2 gap-3 px-5">
+          {[0, 1, 2, 3].map((i) => (
+            <Skeleton key={i} className="aspect-4/5 rounded-2xl" />
+          ))}
+        </div>
+      ) : sorted.length === 0 ? (
+        <div className="mx-5 rounded-2xl border border-dashed border-border p-8 text-center">
+          <h2 className="font-display text-xl">Start your shelf</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Photograph a product and we'll fill in the details for you.
+          </p>
+          <Button asChild className="mt-5 h-12 w-full text-base">
+            <Link to="/add">Add your first product</Link>
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-3 px-5">
+          {sorted.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+      )}
+    </AppShell>
   );
 }
