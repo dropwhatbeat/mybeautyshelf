@@ -219,6 +219,13 @@ function AddProduct() {
           >
             {front ? "Read the label" : "Take a photo to start"}
           </Button>
+          <button
+            type="button"
+            onClick={() => void navigate({ to: "/bulk" })}
+            className="w-full text-center text-sm text-muted-foreground underline underline-offset-4"
+          >
+            Got several? Photograph the whole shelf at once
+          </button>
         </div>
       )}
 
