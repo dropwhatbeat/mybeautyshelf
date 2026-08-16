@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AddRouteImport } from './routes/add'
+import { Route as ColourRouteImport } from './routes/colour'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const AddRoute = AddRouteImport.update({
   id: '/add',
   path: '/add',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ColourRoute = ColourRouteImport.update({
+  id: '/colour',
+  path: '/colour',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InsightsRoute = InsightsRouteImport.update({
@@ -44,6 +50,7 @@ const ProductIdRoute = ProductIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/add': typeof AddRoute
+  '/colour': typeof ColourRoute
   '/insights': typeof InsightsRoute
   '/onboarding': typeof OnboardingRoute
   '/product/$id': typeof ProductIdRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/add': typeof AddRoute
+  '/colour': typeof ColourRoute
   '/insights': typeof InsightsRoute
   '/onboarding': typeof OnboardingRoute
   '/product/$id': typeof ProductIdRoute
@@ -59,21 +67,31 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/add': typeof AddRoute
+  '/colour': typeof ColourRoute
   '/insights': typeof InsightsRoute
   '/onboarding': typeof OnboardingRoute
   '/product/$id': typeof ProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/add' | '/insights' | '/onboarding' | '/product/$id'
+  fullPaths:
+    '/' | '/add' | '/colour' | '/insights' | '/onboarding' | '/product/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/add' | '/insights' | '/onboarding' | '/product/$id'
-  id: '__root__' | '/' | '/add' | '/insights' | '/onboarding' | '/product/$id'
+  to: '/' | '/add' | '/colour' | '/insights' | '/onboarding' | '/product/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/add'
+    | '/colour'
+    | '/insights'
+    | '/onboarding'
+    | '/product/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AddRoute: typeof AddRoute
+  ColourRoute: typeof ColourRoute
   InsightsRoute: typeof InsightsRoute
   OnboardingRoute: typeof OnboardingRoute
   ProductIdRoute: typeof ProductIdRoute
@@ -93,6 +111,13 @@ declare module '@tanstack/react-router' {
       path: '/add'
       fullPath: '/add'
       preLoaderRoute: typeof AddRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/colour': {
+      id: '/colour'
+      path: '/colour'
+      fullPath: '/colour'
+      preLoaderRoute: typeof ColourRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/insights': {
@@ -122,6 +147,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddRoute: AddRoute,
+  ColourRoute: ColourRoute,
   InsightsRoute: InsightsRoute,
   OnboardingRoute: OnboardingRoute,
   ProductIdRoute: ProductIdRoute,
