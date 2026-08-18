@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { clearDraft, readDraft } from "@/lib/onboarding-draft";
 
 function NotFoundComponent() {
   return (
@@ -138,11 +139,31 @@ function RootComponent() {
   }, []);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       void router.invalidate();
       if (event !== "SIGNED_OUT") void queryClient.invalidateQueries();
       else queryClient.clear();
+
+      if (event === "SIGNED_IN" && session?.user) {
+        const draft = readDraft();
+        if (!draft) return;
+        void (async () => {
+          const { error } = await supabase
+            .from("profiles")
+            .update({
+              skin_type: draft.skin_type,
+              concerns: draft.concerns,
+              undertone: draft.undertone,
+              onboarded: true,
+            })
+            .eq("id", session.user.id);
+          clearDraft();
+          if (error) return;
+          void queryClient.invalidateQueries({ queryKey: ["profile"] });
+          void router.navigate({ to: "/shelfie" });
+        })();
+      }
     });
     return () => sub.subscription.unsubscribe();
   }, [router, queryClient]);
