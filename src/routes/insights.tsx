@@ -44,9 +44,18 @@ function Insights() {
   const expiring = useMemo(
     () =>
       active
-        .map((p) => ({ p, f: freshnessFor(p.date_opened, p.pao_months) }))
-        .filter((x) => x.f.status === "soon" || x.f.status === "expired")
+        .map((p) => ({ p, f: freshnessFor(p.date_opened, p.pao_months, p.expiry_date) }))
+        .filter((x) => x.f.opened && (x.f.status === "soon" || x.f.status === "expired"))
         .sort((a, b) => (a.f.daysRemaining ?? 0) - (b.f.daysRemaining ?? 0)),
+    [active],
+  );
+
+  const toOpen = useMemo(
+    () =>
+      active
+        .map((p) => ({ p, f: freshnessFor(p.date_opened, p.pao_months, p.expiry_date) }))
+        .filter((x) => !x.f.opened && x.f.status !== "unknown" && x.f.status !== "sealed")
+        .sort((a, b) => (a.f.daysToOpenBy ?? 0) - (b.f.daysToOpenBy ?? 0)),
     [active],
   );
 

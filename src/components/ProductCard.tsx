@@ -27,7 +27,7 @@ export function ProductImage({
 }
 
 export function ProductCard({ product }: { product: Product }) {
-  const fresh = freshnessFor(product.date_opened, product.pao_months);
+  const fresh = freshnessFor(product.date_opened, product.pao_months, product.expiry_date);
   const { user } = useAuth();
   const { data: profile } = useProfile(user?.id);
   const showFit = !profileIsEmpty(profile) && product.ingredients.length > 0;
