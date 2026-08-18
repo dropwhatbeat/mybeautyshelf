@@ -75,6 +75,14 @@ function Insights() {
     });
   }, [active, profile]);
 
+  const fits = useMemo(() => {
+    if (profileIsEmpty(profile)) return [];
+    return active
+      .filter((p) => p.ingredients.length > 0)
+      .map((p) => ({ p, fit: scoreProduct(p, profile) }))
+      .sort((a, b) => a.fit.score - b.fit.score);
+  }, [active, profile]);
+
   return (
     <AppShell>
       <PageHeader
