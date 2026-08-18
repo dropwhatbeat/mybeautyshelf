@@ -161,6 +161,7 @@ function Insights() {
 
         <section className="rounded-2xl border border-border bg-card p-4">
           <h2 className="font-display text-xl">Routine check</h2>
+          {null}
           {conflicts.length === 0 ? (
             <p className="mt-2 text-sm text-muted-foreground">
               No commonly-flagged combinations across your active products.
