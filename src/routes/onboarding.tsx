@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Lock, ScanFace } from "lucide-react";
+import { ChevronLeft, Lock, ScanFace } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -316,16 +316,26 @@ function Onboarding() {
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-6 pb-10 pt-12">
-      <div className="flex gap-1.5">
-        {steps.map((_, i) => (
-          <span
-            key={i}
-            className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-border"}`}
-          />
-        ))}
+      <div className="flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => (step === 0 ? void navigate({ to: "/" }) : setStep(step - 1))}
+          className="-ml-2 flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          aria-label="Back"
+        >
+          <ChevronLeft className="h-5 w-5" strokeWidth={1.75} />
+        </button>
+        <div className="flex flex-1 gap-1.5 pl-3">
+          {steps.map((_, i) => (
+            <span
+              key={i}
+              className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-border"}`}
+            />
+          ))}
+        </div>
       </div>
 
-      <h1 className="mt-10 font-display text-3xl leading-tight">{current.title}</h1>
+      <h1 className="mt-8 font-display text-3xl leading-tight">{current.title}</h1>
       <p className="mt-2 text-sm text-muted-foreground">{current.hint}</p>
       <div className="mt-8">{current.body}</div>
 
