@@ -131,7 +131,7 @@ export function scoreProduct(product: Product, profile: Profile | null | undefin
       cautions.push(`${harsh} is a stronger active — introduce it slowly on very reactive skin.`);
       score -= 14;
     }
-    if (has(ing, AVOID_KEYWORDS.fragrance!)) {
+    if (has(ing, AVOID_KEYWORDS['fragrance']!)) {
       cautions.push("Contains fragrance, a common trigger for reactive skin.");
       score -= 10;
     }
