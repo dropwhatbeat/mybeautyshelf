@@ -1,4 +1,4 @@
-import { auth, defineMcp } from "@lovable.dev/mcp-js";
+import { auth, defineMcp, type McpDefinitionInput } from "@lovable.dev/mcp-js";
 
 import addProductTool from "./tools/add-product";
 import getSkinProfileTool from "./tools/get-skin-profile";
@@ -18,5 +18,11 @@ export default defineMcp({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",
   }),
-  tools: [listProductsTool, addProductTool, updateProductTool, getSkinProfileTool, routineCheckTool],
+  tools: [
+    listProductsTool,
+    addProductTool,
+    updateProductTool,
+    getSkinProfileTool,
+    routineCheckTool,
+  ] as unknown as McpDefinitionInput["tools"],
 });
