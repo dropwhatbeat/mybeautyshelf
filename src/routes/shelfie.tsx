@@ -21,12 +21,32 @@ type ShelfieResult = {
   best_colours: string[];
   avoid_colours: string[];
   rationale: string;
+  face: {
+    shape: string;
+    confidence: string;
+    rationale: string;
+    tips: string[];
+    fitzpatrick: number | null;
+  };
   skin: {
     hydration: number;
     fine_lines: number;
     pores: number;
+    redness: number;
+    evenness: number;
+    under_eye: number;
+    oil_tzone: number;
+    oil_cheeks: number;
     overall: number;
-    notes: { hydration: string; fine_lines: string; pores: string };
+    notes: {
+      hydration: string;
+      fine_lines: string;
+      pores: string;
+      redness: string;
+      evenness: string;
+      under_eye: string;
+      oil: string;
+    };
   };
 };
 
@@ -89,6 +109,13 @@ function Shelfie() {
         hydration: res.skin.hydration,
         fine_lines: res.skin.fine_lines,
         pores: res.skin.pores,
+        redness: res.skin.redness,
+        evenness: res.skin.evenness,
+        under_eye: res.skin.under_eye,
+        oil_tzone: res.skin.oil_tzone,
+        oil_cheeks: res.skin.oil_cheeks,
+        face_shape: res.face.shape,
+        fitzpatrick: res.face.fitzpatrick,
         overall: res.skin.overall,
         notes: res.skin.notes,
         season: res.season,
@@ -96,7 +123,12 @@ function Shelfie() {
       });
       await supabase
         .from("profiles")
-        .update({ season_result: res.season, season_payload: JSON.parse(JSON.stringify(res)) })
+        .update({
+          season_result: res.season,
+          season_payload: JSON.parse(JSON.stringify(res)),
+          face_shape: res.face.shape,
+          ...(res.face.fitzpatrick !== null ? { fitzpatrick: res.face.fitzpatrick } : {}),
+        })
         .eq("id", user.id);
       void qc.invalidateQueries({ queryKey: ["skin-checks", user.id] });
       void qc.invalidateQueries({ queryKey: ["profile", user.id] });
@@ -196,7 +228,41 @@ function Shelfie() {
                 <ScoreBar label="Hydration" value={result.skin.hydration} note={result.skin.notes.hydration} />
                 <ScoreBar label="Fine lines" value={result.skin.fine_lines} note={result.skin.notes.fine_lines} />
                 <ScoreBar label="Pores" value={result.skin.pores} note={result.skin.notes.pores} />
+                <ScoreBar label="Calmness" value={result.skin.redness} note={result.skin.notes.redness} />
+                <ScoreBar label="Even tone" value={result.skin.evenness} note={result.skin.notes.evenness} />
+                <ScoreBar label="Under-eye" value={result.skin.under_eye} note={result.skin.notes.under_eye} />
+                <ScoreBar
+                  label="Oil balance — T-zone"
+                  value={result.skin.oil_tzone}
+                  note={result.skin.notes.oil}
+                />
+                <ScoreBar label="Oil balance — cheeks" value={result.skin.oil_cheeks} note="" />
               </div>
+            </section>
+
+            <section className="rounded-3xl border border-border bg-card p-5">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                Reads closest to · {result.face.confidence} confidence
+              </p>
+              <h2 className="mt-1 font-display text-3xl capitalize">{result.face.shape}</h2>
+              {result.face.rationale ? (
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  {result.face.rationale}
+                </p>
+              ) : null}
+              {result.face.tips.length > 0 && (
+                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                  {result.face.tips.map((tip) => (
+                    <li key={tip} className="flex gap-2">
+                      <span className="text-primary">·</span>
+                      <span>{tip}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <p className="mt-4 text-xs text-muted-foreground">
+                Hair and camera angle change this. You can change it any time in My skin profile.
+              </p>
             </section>
 
             <section className="rounded-3xl border border-border bg-card p-5">

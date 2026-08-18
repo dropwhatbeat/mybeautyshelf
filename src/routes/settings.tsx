@@ -6,6 +6,13 @@ import { Chip } from "@/components/Chip";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { CONCERNS } from "@/lib/actives";
+import {
+  AGE_RANGES,
+  AVOID_ITEMS,
+  PREGNANCY_OPTIONS,
+  SENSITIVITY_LEVELS,
+  SPF_HABITS,
+} from "@/lib/profile-options";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/lib/queries";
 import { useQueryClient } from "@tanstack/react-query";
@@ -15,6 +22,7 @@ type SkinType = Database["public"]["Enums"]["skin_type"];
 type Undertone = Database["public"]["Enums"]["undertone"];
 const SKIN_TYPES: SkinType[] = ["dry", "oily", "combination", "normal", "sensitive"];
 const UNDERTONES: Undertone[] = ["cool", "neutral", "warm"];
+const FACE_SHAPES = ["oval", "round", "square", "heart", "oblong", "diamond"];
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -47,6 +55,7 @@ function Settings() {
   }
 
   const concerns = profile?.concerns ?? [];
+  const avoidList = profile?.avoid_list ?? [];
 
   async function deleteEverything() {
     if (!user) return;
@@ -105,6 +114,74 @@ function Settings() {
         </section>
 
         <section className="rounded-2xl border border-border bg-card p-4">
+          <h2 className="font-display text-xl">About you</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Age range</p>
+          <div className="mt-2 flex flex-wrap gap-2.5">
+            {AGE_RANGES.map((a) => (
+              <Chip
+                key={a}
+                label={a}
+                selected={profile?.age_range === a}
+                onClick={() => void patch({ age_range: a })}
+              />
+            ))}
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground">SPF habit</p>
+          <div className="mt-2 flex flex-wrap gap-2.5">
+            {SPF_HABITS.map((s) => (
+              <Chip
+                key={s}
+                label={s}
+                selected={profile?.spf_habit === s}
+                onClick={() => void patch({ spf_habit: s })}
+              />
+            ))}
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground">Pregnant or breastfeeding</p>
+          <div className="mt-2 flex flex-wrap gap-2.5">
+            {PREGNANCY_OPTIONS.map((p) => (
+              <Chip
+                key={p}
+                label={p}
+                selected={profile?.pregnancy === p}
+                onClick={() => void patch({ pregnancy: p })}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card p-4">
+          <h2 className="font-display text-xl">Sensitivity</h2>
+          <div className="mt-3 flex flex-wrap gap-2.5">
+            {SENSITIVITY_LEVELS.map((s) => (
+              <Chip
+                key={s}
+                label={s}
+                selected={profile?.sensitivity === s}
+                onClick={() => void patch({ sensitivity: s })}
+              />
+            ))}
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground">Ingredients you avoid</p>
+          <div className="mt-2 flex flex-wrap gap-2.5">
+            {AVOID_ITEMS.map((a) => (
+              <Chip
+                key={a}
+                label={a}
+                selected={avoidList.includes(a)}
+                onClick={() =>
+                  void patch({
+                    avoid_list: avoidList.includes(a)
+                      ? avoidList.filter((x) => x !== a)
+                      : [...avoidList, a],
+                  })
+                }
+              />
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card p-4">
           <h2 className="font-display text-xl">Undertone</h2>
           <div className="mt-3 flex flex-wrap gap-2.5">
             {UNDERTONES.map((u) => (
@@ -121,6 +198,23 @@ function Settings() {
               Your Shelfie says: <span className="text-foreground">{profile.season_result}</span>
             </p>
           ) : null}
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card p-4">
+          <h2 className="font-display text-xl">Face shape</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Read from your Shelfie — change it if another one fits better.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2.5">
+            {FACE_SHAPES.map((f) => (
+              <Chip
+                key={f}
+                label={f}
+                selected={profile?.face_shape === f}
+                onClick={() => void patch({ face_shape: f })}
+              />
+            ))}
+          </div>
         </section>
 
         <section className="rounded-2xl border border-border bg-card p-4">

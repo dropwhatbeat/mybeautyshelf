@@ -105,39 +105,57 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age_range: string | null
+          avoid_list: string[]
           concerns: string[]
           created_at: string
           display_name: string | null
+          face_shape: string | null
           fitzpatrick: number | null
           id: string
           onboarded: boolean
+          pregnancy: string | null
           season_payload: Json | null
           season_result: string | null
+          sensitivity: string | null
           skin_type: Database["public"]["Enums"]["skin_type"] | null
+          spf_habit: string | null
           undertone: Database["public"]["Enums"]["undertone"] | null
         }
         Insert: {
+          age_range?: string | null
+          avoid_list?: string[]
           concerns?: string[]
           created_at?: string
           display_name?: string | null
+          face_shape?: string | null
           fitzpatrick?: number | null
           id: string
           onboarded?: boolean
+          pregnancy?: string | null
           season_payload?: Json | null
           season_result?: string | null
+          sensitivity?: string | null
           skin_type?: Database["public"]["Enums"]["skin_type"] | null
+          spf_habit?: string | null
           undertone?: Database["public"]["Enums"]["undertone"] | null
         }
         Update: {
+          age_range?: string | null
+          avoid_list?: string[]
           concerns?: string[]
           created_at?: string
           display_name?: string | null
+          face_shape?: string | null
           fitzpatrick?: number | null
           id?: string
           onboarded?: boolean
+          pregnancy?: string | null
           season_payload?: Json | null
           season_result?: string | null
+          sensitivity?: string | null
           skin_type?: Database["public"]["Enums"]["skin_type"] | null
+          spf_habit?: string | null
           undertone?: Database["public"]["Enums"]["undertone"] | null
         }
         Relationships: []
@@ -169,37 +187,58 @@ export type Database = {
       skin_checks: {
         Row: {
           created_at: string
+          evenness: number | null
+          face_shape: string | null
           fine_lines: number
+          fitzpatrick: number | null
           hydration: number
           id: string
           notes: Json | null
+          oil_cheeks: number | null
+          oil_tzone: number | null
           overall: number
           pores: number
+          redness: number | null
           season: string | null
+          under_eye: number | null
           undertone: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
+          evenness?: number | null
+          face_shape?: string | null
           fine_lines: number
+          fitzpatrick?: number | null
           hydration: number
           id?: string
           notes?: Json | null
+          oil_cheeks?: number | null
+          oil_tzone?: number | null
           overall: number
           pores: number
+          redness?: number | null
           season?: string | null
+          under_eye?: number | null
           undertone?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
+          evenness?: number | null
+          face_shape?: string | null
           fine_lines?: number
+          fitzpatrick?: number | null
           hydration?: number
           id?: string
           notes?: Json | null
+          oil_cheeks?: number | null
+          oil_tzone?: number | null
           overall?: number
           pores?: number
+          redness?: number | null
           season?: string | null
+          under_eye?: number | null
           undertone?: string | null
           user_id?: string
         }
