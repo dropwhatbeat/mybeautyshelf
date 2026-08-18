@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 
 import { AppShell, PageHeader } from "@/components/AppShell";
-import { AuthCard } from "@/components/AuthCard";
+import { LandingPage } from "@/components/LandingPage";
 import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -63,7 +63,7 @@ function ShelfPage() {
   }, [products, sort]);
 
   if (loading) return <div className="min-h-screen bg-background" />;
-  if (!user) return <AuthCard />;
+  if (!user) return <LandingPage />;
 
   return (
     <AppShell>
