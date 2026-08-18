@@ -225,10 +225,14 @@ export async function analyseShelfie(selfie: string): Promise<ShelfieAnalysis> {
         content: [
           {
             type: "text",
-            text: `You are a cosmetic beauty-counter assistant. From the selfie, give (a) a seasonal colour read, (b) a cosmetic appearance score the way an in-store skin scanner does, and (c) a face shape read for makeup placement. Return ONLY strict JSON:
-{"season": string, "undertone": "cool"|"neutral"|"warm", "best_colours": [6 hex strings like "#aabbcc"], "avoid_colours": [3 hex strings], "rationale": string, "skin": {"hydration": 0-100, "fine_lines": 0-100, "pores": 0-100, "redness": 0-100, "evenness": 0-100, "under_eye": 0-100, "oil_tzone": 0-100, "oil_cheeks": 0-100, "notes": {"hydration": string, "fine_lines": string, "pores": string, "redness": string, "evenness": string, "under_eye": string, "oil": string}}, "face": {"shape": "oval"|"round"|"square"|"heart"|"oblong"|"diamond", "confidence": "low"|"medium"|"high", "rationale": string, "tips": [2-3 short strings], "fitzpatrick": 1-6}}
+            text: `You are a cosmetic beauty-counter assistant. FIRST check the photo is a usable single-person selfie, THEN give (a) a seasonal colour read, (b) a cosmetic appearance score the way an in-store skin scanner does, and (c) a face shape read for makeup placement. Return ONLY strict JSON:
+{"check": {"face_count": integer, "lighting": "good"|"dim"|"harsh"|"colour_cast", "sharpness": "sharp"|"soft"|"blurry", "face_coverage": "full"|"partial"|"tiny", "obstructed": boolean, "usable": boolean, "reason": string|null}, "season": string, "undertone": "cool"|"neutral"|"warm", "best_colours": [6 hex strings like "#aabbcc"], "avoid_colours": [3 hex strings], "rationale": string, "skin": {"hydration": 0-100, "fine_lines": 0-100, "pores": 0-100, "redness": 0-100, "evenness": 0-100, "under_eye": 0-100, "oil_tzone": 0-100, "oil_cheeks": 0-100, "notes": {"hydration": string, "fine_lines": string, "pores": string, "redness": string, "evenness": string, "under_eye": string, "oil": string}}, "face": {"shape": "oval"|"round"|"square"|"heart"|"oblong"|"diamond", "confidence": "low"|"medium"|"high", "rationale": string, "tips": [2-3 short strings], "fitzpatrick": 1-6}}
 
 Rules:
+- Do the check FIRST and be strict and honest. face_count = number of human faces visible, however small, partial, blurred or in the background — count them all. If you see more than one person, say so.
+- usable is false when: face_count is not exactly 1; the face is blurry or soft; lighting is dim, harsh or strongly colour-cast so tone cannot be judged; the face is partial, tiny in frame or turned far away; or it is obstructed by hand, hair over the face, mask or sunglasses.
+- reason is ONE short sentence in plain language telling the person how to retake the photo.
+- If usable is false, still fill the other fields with best guesses; they will be discarded.
 - season is one of the 12 classic seasons, e.g. "Soft Autumn", "Bright Winter".
 - rationale is ONE warm, plain-language paragraph about colour harmony. Around 50 words.
 - Scores are cosmetic appearance only, higher is better: hydration = how plump and dewy the skin looks; fine_lines = how smooth the skin looks; pores = how refined the skin texture looks; redness = how calm and even in tone the skin looks (higher = calmer); evenness = how even the tone looks, free of dark spots; under_eye = how bright and rested the under-eye area looks; oil_tzone and oil_cheeks = how balanced (not shiny) those zones look.
@@ -244,6 +248,61 @@ Rules:
     ],
   });
   const parsed = parseJson(raw);
+  if (!parsed) {
+    throw new Error(
+      "We couldn't read that photo well enough. Try again in natural light against a plain wall.",
+    );
+  }
+  const checkRaw = (parsed?.["check"] ?? {}) as Record<string, unknown>;
+  const faceCount = num(checkRaw["face_count"]);
+  const lighting = (str(checkRaw["lighting"]) ?? "good").toLowerCase();
+  const sharpness = (str(checkRaw["sharpness"]) ?? "sharp").toLowerCase();
+  const coverage = (str(checkRaw["face_coverage"]) ?? "full").toLowerCase();
+  const obstructed = checkRaw["obstructed"] === true;
+  const usable = checkRaw["usable"] !== false;
+  const rawFaceCount = typeof checkRaw["face_count"] === "number" ? checkRaw["face_count"] : faceCount ?? 0;
+
+  if (rawFaceCount === 0) {
+    throw new Error(
+      "We couldn't find a face in that photo. Take a clear selfie facing a window, on your own.",
+    );
+  }
+  if (rawFaceCount > 1) {
+    throw new Error(
+      "We spotted more than one face. A Shelfie only works solo — retake it with just you in frame.",
+    );
+  }
+  if (sharpness === "blurry" || sharpness === "soft") {
+    throw new Error("That photo is a little blurry. Hold still and retake it in good light.");
+  }
+  if (lighting === "dim") {
+    throw new Error("It's too dim to read your skin. Face a window in daylight and try again.");
+  }
+  if (lighting === "harsh") {
+    throw new Error(
+      "The lighting is too harsh — strong shadows skew the reading. Try soft, indirect daylight.",
+    );
+  }
+  if (lighting === "colour_cast") {
+    throw new Error(
+      "The light in that photo is strongly tinted, so we can't read your tone. Try natural daylight.",
+    );
+  }
+  if (coverage === "tiny" || coverage === "partial") {
+    throw new Error("Bring your face closer and fully into frame, then retake your Shelfie.");
+  }
+  if (obstructed) {
+    throw new Error(
+      "Something is covering part of your face. Push hair back, remove glasses, and retake it.",
+    );
+  }
+  if (!usable) {
+    throw new Error(
+      str(checkRaw["reason"]) ??
+        "We couldn't read that photo well enough. Try again in natural light against a plain wall.",
+    );
+  }
+
   const best = hexes(parsed?.["best_colours"], 6);
   const avoid = hexes(parsed?.["avoid_colours"], 3);
   const season = str(parsed?.["season"]);
