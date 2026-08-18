@@ -51,6 +51,7 @@ function Onboarding() {
   const [pregnancy, setPregnancy] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [teaser, setTeaser] = useState(false);
+  const [manualUndertone, setManualUndertone] = useState(false);
 
   async function finish(to: "/add" | "/shelfie" = "/add") {
     if (loading) return;
