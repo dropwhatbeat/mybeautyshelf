@@ -8,6 +8,7 @@ import doodleInsights from "@/assets/doodle-insights.png";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { ACTIVES, CONCERN_GUIDES, CONFLICTS, detectActives } from "@/lib/actives";
+import { bandText, profileIsEmpty, scoreProduct } from "@/lib/fit";
 import { freshnessFor } from "@/lib/freshness";
 import { useProducts, useProfile, useUpdateProduct, type Product } from "@/lib/queries";
 
