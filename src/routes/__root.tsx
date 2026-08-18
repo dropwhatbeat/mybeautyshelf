@@ -155,6 +155,11 @@ function RootComponent() {
               skin_type: draft.skin_type,
               concerns: draft.concerns,
               undertone: draft.undertone,
+              age_range: draft.age_range,
+              spf_habit: draft.spf_habit,
+              sensitivity: draft.sensitivity,
+              avoid_list: draft.avoid_list,
+              pregnancy: draft.pregnancy,
               onboarded: true,
             })
             .eq("id", session.user.id);
