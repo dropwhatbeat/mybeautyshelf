@@ -179,7 +179,7 @@ function Shelfie() {
               />
               <span className="font-display text-lg text-foreground">Take a shelfie</span>
               <span className="px-10 text-center text-xs">
-                Face a window, keep your hair off your face, and skip the filters.
+                Just you in frame. Face a window, hair off your face, no filters.
               </span>
             </div>
           )}
