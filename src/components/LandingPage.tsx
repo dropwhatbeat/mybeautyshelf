@@ -40,14 +40,14 @@ export function LandingPage() {
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
         Track what's fresh, what clashes, and what's actually working — across every brand on your
-        shelf. Have a look around first; you only need an account when you want to save it.
+        shelf.
       </p>
 
       <Button asChild className="mt-7 h-12 w-full text-base">
-        <Link to="/onboarding">Start free — no account yet</Link>
+        <Link to="/onboarding">Build my beauty profile</Link>
       </Button>
       <p className="mt-2 text-center text-xs text-muted-foreground">
-        Three quick taps to build your skin profile.
+        Three quick taps. No account needed to start.
       </p>
 
       <ul className="mt-10 space-y-3">
