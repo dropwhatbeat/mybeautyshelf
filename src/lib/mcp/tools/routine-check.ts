@@ -33,7 +33,10 @@ export default defineTool({
     }));
 
     const expiring = products
-      .map((p) => ({ product: `${p.brand} ${p.name}`, ...freshnessFor(p.date_opened, p.pao_months) }))
+      .map((p) => ({
+        product: `${p.brand} ${p.name}`,
+        ...freshnessFor(p.date_opened, p.pao_months, p.expiry_date),
+      }))
       .filter((f) => f.status === "soon" || f.status === "expired")
       .sort((a, b) => (a.daysRemaining ?? 0) - (b.daysRemaining ?? 0));
 
