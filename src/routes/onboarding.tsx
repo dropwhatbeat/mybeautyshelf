@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Lock, ScanFace } from "lucide-react";
+import { ChevronLeft, Lock, ScanFace } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
