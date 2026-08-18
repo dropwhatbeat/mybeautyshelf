@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 
+import { useAuth } from "@/hooks/useAuth";
+import { bandDot, profileIsEmpty, scoreProduct } from "@/lib/fit";
 import { dotClass, freshnessFor } from "@/lib/freshness";
-import { useSignedUrl, type Product } from "@/lib/queries";
+import { useProfile, useSignedUrl, type Product } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 
 export function ProductImage({
@@ -26,6 +28,10 @@ export function ProductImage({
 
 export function ProductCard({ product }: { product: Product }) {
   const fresh = freshnessFor(product.date_opened, product.pao_months);
+  const { user } = useAuth();
+  const { data: profile } = useProfile(user?.id);
+  const showFit = !profileIsEmpty(profile) && product.ingredients.length > 0;
+  const fit = showFit ? scoreProduct(product, profile) : null;
   return (
     <Link
       to="/product/$id"
@@ -45,6 +51,17 @@ export function ProductCard({ product }: { product: Product }) {
           )}
           aria-label={fresh.label}
         />
+        {fit ? (
+          <span
+            className={cn(
+              "absolute left-2.5 top-2.5 rounded-full px-2 py-0.5 text-[10px] font-medium text-card ring-2 ring-card",
+              bandDot[fit.band],
+            )}
+            aria-label={`Fit for your skin: ${fit.bandLabel}`}
+          >
+            {fit.score}
+          </span>
+        ) : null}
       </div>
       <div className="px-3 py-2.5">
         <p className="truncate text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
