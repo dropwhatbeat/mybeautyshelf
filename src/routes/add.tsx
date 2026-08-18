@@ -26,12 +26,12 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/add")({
   head: () => ({
     meta: [
-      { title: "Add a product — Shelf" },
+      { title: "Add a product — My Beauty Shelf" },
       {
         name: "description",
         content: "Photograph the front and back of a product and we'll fill in the details.",
       },
-      { property: "og:title", content: "Add a product — Shelf" },
+      { property: "og:title", content: "Add a product — My Beauty Shelf" },
       {
         property: "og:description",
         content: "Photograph the front and back of a product and we'll fill in the details.",

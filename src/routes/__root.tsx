@@ -79,13 +79,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Shelf — your beauty shelf, all brands" },
+      { title: "My Beauty Shelf — every brand on one shelf" },
       {
         name: "description",
         content:
           "Track every skincare and makeup product you own: freshness dates, ingredient clashes and your colour season.",
       },
-      { property: "og:title", content: "Shelf — your beauty shelf, all brands" },
+      { property: "og:title", content: "My Beauty Shelf — every brand on one shelf" },
       {
         property: "og:description",
         content: "Freshness dates, ingredient clashes and colour analysis for the products you already own.",

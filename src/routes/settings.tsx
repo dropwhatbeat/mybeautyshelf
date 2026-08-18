@@ -21,9 +21,9 @@ const UNDERTONES: Undertone[] = ["cool", "neutral", "warm"];
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — Shelf" },
+      { title: "Settings — My Beauty Shelf" },
       { name: "description", content: "Your skin profile, appearance and account data." },
-      { property: "og:title", content: "Settings — Shelf" },
+      { property: "og:title", content: "Settings — My Beauty Shelf" },
       { property: "og:description", content: "Your skin profile, appearance and account data." },
     ],
   }),
