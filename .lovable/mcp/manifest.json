@@ -11,9 +11,9 @@
   },
   "mcp": {
     "server": {
-      "name": "vanity-shelf",
+      "name": "my-beauty-shelf",
       "version": "0.1.0",
-      "title": "Vanity Shelf"
+      "title": "My Beauty Shelf"
     },
     "tools": [
       {

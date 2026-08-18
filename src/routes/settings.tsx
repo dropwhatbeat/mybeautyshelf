@@ -61,6 +61,7 @@ function Settings() {
         .remove(files.map((f) => `${user.id}/${f.name}`));
     }
     await supabase.from("products").delete().eq("user_id", user.id);
+    await supabase.from("skin_checks").delete().eq("user_id", user.id);
     await patch({ season_result: null, season_payload: null });
     void qc.invalidateQueries();
     toast.success("Your shelf has been cleared.");
