@@ -92,8 +92,8 @@ export async function extractProductFromPhotos(
 {"brand": string|null, "name": string|null, "category": one of ${CATEGORIES.join("|")}|null, "size_ml": number|null, "pao_months": number|null, "ingredients": string[], "ingredients_readable": boolean, "notes": string|null}
 
 Rules:
-- Packaging may be in ANY language (Japanese, Korean, Chinese, French...). Read it in its original language, then TRANSLATE to English: brand in its usual Latin-script form (e.g. \u8c46\u4e73 -> "Tounyu" only if that is the real romanisation, otherwise the official English brand name), and name in plain English.
-- Translate ingredients to their standard English INCI names (e.g. \u30b0\u30ea\u30bb\u30ea\u30f3 -> "Glycerin", \u6c34 -> "Water"). Keep the printed order.
+- Packaging may be in ANY language (Japanese, Korean, Chinese, French and so on). Read it in the original language, then TRANSLATE the output to English: use the official English/Latin-script brand name, and an English product name.
+- Translate ingredients into their standard English INCI names (for example the Japanese for water becomes "Water", for glycerin becomes "Glycerin"). Keep the printed order.
 - Put the original-language product name in "notes" if you translated it.
 - Only report what is legibly visible. If a field is unclear, use null rather than guessing.
 - NEVER invent ingredients. If no ingredient list is legible in the photos, return "ingredients": [] and "ingredients_readable": false.
