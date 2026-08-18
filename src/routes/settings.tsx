@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { Chip } from "@/components/Chip";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
 import { CONCERNS } from "@/lib/actives";
 import { supabase } from "@/integrations/supabase/client";
