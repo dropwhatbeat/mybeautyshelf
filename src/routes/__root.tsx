@@ -140,12 +140,19 @@ function RootComponent() {
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-      void router.invalidate();
-      if (event !== "SIGNED_OUT") void queryClient.invalidateQueries();
-      else queryClient.clear();
+      const tracked =
+        event === "SIGNED_IN" ||
+        event === "SIGNED_OUT" ||
+        event === "USER_UPDATED" ||
+        event === "INITIAL_SESSION";
+      if (!tracked) return;
+      if (event !== "INITIAL_SESSION") {
+        void router.invalidate();
+        if (event !== "SIGNED_OUT") void queryClient.invalidateQueries();
+        else queryClient.clear();
+      }
 
-      if ((event === "SIGNED_IN" || event === "USER_UPDATED") && session?.user) {
+      if (event !== "SIGNED_OUT" && session?.user) {
         const draft = readDraft();
         if (!draft) return;
         void (async () => {
