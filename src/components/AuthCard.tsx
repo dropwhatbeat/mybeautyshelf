@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
+import doodleBottle from "@/assets/doodle-bottle.png";
 
 export function AuthCard() {
   const [email, setEmail] = useState("");
@@ -39,6 +40,13 @@ export function AuthCard() {
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-6 py-12">
+      <img
+        src={doodleBottle}
+        alt=""
+        width={768}
+        height={768}
+        className="mb-4 w-28"
+      />
       <p className="text-[11px] uppercase tracking-[0.3em] text-primary">My Beauty Shelf</p>
       <h1 className="mt-3 font-display text-4xl leading-tight text-foreground">
         Your skincare and makeup shelf, finally in one place.

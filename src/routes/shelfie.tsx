@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
-import { Camera, Share2 } from "lucide-react";
+import { Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { friendlyError } from "@/lib/errors";
 

@@ -6,7 +6,6 @@ import { Chip } from "@/components/Chip";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
-import { useTheme } from "@/hooks/useTheme";
 import { CONCERNS } from "@/lib/actives";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/lib/queries";
@@ -35,7 +34,6 @@ function Settings() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: profile } = useProfile(user?.id);
-  const { theme, toggle } = useTheme();
 
   type ProfileUpdate = Database["public"]["Tables"]["profiles"]["Update"];
 
@@ -124,17 +122,6 @@ function Settings() {
               Your Shelfie says: <span className="text-foreground">{profile.season_result}</span>
             </p>
           ) : null}
-        </section>
-
-        <section className="flex items-center justify-between rounded-2xl border border-border bg-card p-4">
-          <div>
-            <h2 className="font-display text-xl">Evening mode</h2>
-            <p className="text-sm text-muted-foreground">A darker, warmer shelf.</p>
-          </div>
-          <Switch
-            checked={theme === "dark"}
-            onCheckedChange={() => toggle()}
-          />
         </section>
 
         <section className="rounded-2xl border border-border bg-card p-4">

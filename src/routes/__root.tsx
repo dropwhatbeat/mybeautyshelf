@@ -132,11 +132,9 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
-    const stored = localStorage.getItem("shelf-theme");
-    const dark =
-      stored === "dark" ||
-      (stored !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    document.documentElement.classList.toggle("dark", dark);
+    // Light theme only.
+    document.documentElement.classList.remove("dark");
+    localStorage.removeItem("shelf-theme");
   }, []);
 
   useEffect(() => {
