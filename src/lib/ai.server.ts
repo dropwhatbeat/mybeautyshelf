@@ -399,6 +399,7 @@ function coerceItemInner(raw: Record<string, unknown>): BulkItem {
     category: category && CATEGORIES.includes(category) ? category : null,
     size_ml: num(raw["size_ml"]),
     pao_months: num(raw["pao_months"]),
+    expiry_date: isoDate(raw["expiry_date"]),
     ingredients,
     ingredients_readable: ingredients.length > 0,
     notes: str(raw["notes"]),
