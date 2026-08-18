@@ -145,7 +145,7 @@ function RootComponent() {
       if (event !== "SIGNED_OUT") void queryClient.invalidateQueries();
       else queryClient.clear();
 
-      if (event === "SIGNED_IN" && session?.user) {
+      if ((event === "SIGNED_IN" || event === "USER_UPDATED") && session?.user) {
         const draft = readDraft();
         if (!draft) return;
         void (async () => {
