@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { ACTIVES, ingredientActive } from "@/lib/actives";
 import { bandText, profileIsEmpty, scoreProduct } from "@/lib/fit";
-import { freshnessFor, freshnessWord, dotClass } from "@/lib/freshness";
+import { formatDate, freshnessFor, freshnessWord, dotClass } from "@/lib/freshness";
 import { supabase } from "@/integrations/supabase/client";
 import { useProduct, useProfile, useReviews, useUpdateProduct, type Product, type Profile } from "@/lib/queries";
 import { cn } from "@/lib/utils";
@@ -69,7 +69,7 @@ function ProductDetail() {
     );
   }
 
-  const fresh = freshnessFor(product.date_opened, product.pao_months);
+  const fresh = freshnessFor(product.date_opened, product.pao_months, product.expiry_date);
   const daysOpen = product.date_opened
     ? Math.floor((Date.now() - new Date(product.date_opened + "T00:00:00").getTime()) / 86_400_000)
     : 0;
@@ -133,13 +133,47 @@ function ProductDetail() {
             <p className="text-sm font-medium">{freshnessWord[fresh.status]}</p>
             <p className="text-xs text-muted-foreground">
               {fresh.status === "unknown"
-                ? "Add the date you opened it and the months-after-opening figure."
+                ? "Add the printed expiry, or the date you opened it plus the months-after-opening figure."
                 : fresh.label}
             </p>
           </div>
         </div>
 
         <FitCard product={product} profile={profile ?? null} />
+
+        <div className="mt-4 grid grid-cols-2 gap-2.5">
+          {(
+            [
+              { key: "sealed", label: "Still sealed" },
+              { key: "opened", label: "Opened" },
+            ] as const
+          ).map((o) => {
+            const isOpen = !!product.date_opened;
+            const selected = o.key === "opened" ? isOpen : !isOpen;
+            return (
+              <button
+                key={o.key}
+                onClick={() =>
+                  update.mutate({
+                    id: product.id,
+                    patch: {
+                      date_opened:
+                        o.key === "opened" ? new Date().toISOString().slice(0, 10) : null,
+                    },
+                  })
+                }
+                className={cn(
+                  "rounded-2xl border px-4 py-3 text-sm transition-colors",
+                  selected
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card",
+                )}
+              >
+                {o.label}
+              </button>
+            );
+          })}
+        </div>
 
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
@@ -171,6 +205,29 @@ function ProductDetail() {
               }
             />
           </div>
+        </div>
+
+        <div className="mt-3 space-y-1.5">
+          <Label className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
+            Printed expiry (EXP on the box)
+          </Label>
+          <Input
+            type="date"
+            className="h-12"
+            value={product.expiry_date ?? ""}
+            onChange={(e) =>
+              update.mutate({ id: product.id, patch: { expiry_date: e.target.value || null } })
+            }
+          />
+          {fresh.openBy && !fresh.opened ? (
+            <p className="text-xs text-muted-foreground">
+              Open by {formatDate(fresh.openBy)} to finish it before it turns.
+            </p>
+          ) : fresh.expiresOn && fresh.opened ? (
+            <p className="text-xs text-muted-foreground">
+              Use up by {formatDate(fresh.expiresOn)}.
+            </p>
+          ) : null}
         </div>
 
         {product.image_back_url ? (
