@@ -19,6 +19,16 @@ export type ColourAnalysis = {
   rationale: string;
 };
 
+export type SkinScores = {
+  hydration: number;
+  fine_lines: number;
+  pores: number;
+  overall: number;
+  notes: { hydration: string; fine_lines: string; pores: string };
+};
+
+export type ShelfieAnalysis = ColourAnalysis & { skin: SkinScores };
+
 export type BulkItem = ProductExtraction & { position: string | null };
 
 export type BulkChatTurn = { role: "user" | "assistant"; content: string };
