@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { ScanFace } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -36,7 +37,7 @@ function Onboarding() {
   const [undertone, setUndertone] = useState<Undertone | null>(null);
   const [saving, setSaving] = useState(false);
 
-  async function finish() {
+  async function finish(to: "/add" | "/shelfie" = "/add") {
     if (!user) return;
     setSaving(true);
     const { error } = await supabase
@@ -53,7 +54,7 @@ function Onboarding() {
       toast.error("Couldn't save that — try again.");
       return;
     }
-    void navigate({ to: "/add" });
+    void navigate({ to });
   }
 
   const steps = [
@@ -90,12 +91,30 @@ function Onboarding() {
     },
     {
       title: "Your undertone",
-      hint: "Not sure? Skip it — a Shelfie can tell you later.",
+      hint: "Not sure? Take a Shelfie and we'll read it from your photo.",
       body: (
-        <div className="flex flex-wrap gap-2.5">
-          {UNDERTONES.map((u) => (
-            <Chip key={u} label={u} selected={undertone === u} onClick={() => setUndertone(u)} />
-          ))}
+        <div className="space-y-6">
+          <div className="flex flex-wrap gap-2.5">
+            {UNDERTONES.map((u) => (
+              <Chip key={u} label={u} selected={undertone === u} onClick={() => setUndertone(u)} />
+            ))}
+          </div>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => void finish("/shelfie")}
+            className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left transition-colors hover:border-primary"
+          >
+            <ScanFace className="h-5 w-5 shrink-0 text-primary" strokeWidth={1.75} />
+            <span>
+              <span className="block text-sm font-medium text-foreground">
+                Not sure? Take a Shelfie
+              </span>
+              <span className="block text-xs text-muted-foreground">
+                One selfie reads your undertone, colour season and skin scores.
+              </span>
+            </span>
+          </button>
         </div>
       ),
     },
@@ -123,13 +142,13 @@ function Onboarding() {
         <Button
           className="h-12 w-full text-base"
           disabled={saving}
-          onClick={() => (last ? void finish() : setStep(step + 1))}
+          onClick={() => (last ? void finish("/add") : setStep(step + 1))}
         >
           {last ? "Add your first product" : "Continue"}
         </Button>
         <button
           type="button"
-          onClick={() => (last ? void finish() : setStep(step + 1))}
+          onClick={() => (last ? void finish("/add") : setStep(step + 1))}
           className="w-full text-sm text-muted-foreground underline underline-offset-4"
         >
           Skip
