@@ -1,6 +1,6 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 
-import { activesIn, CONFLICTS } from "@/lib/actives";
+import { ACTIVES, CONFLICTS, detectActives, type ActiveKey } from "@/lib/actives";
 import { freshnessFor } from "@/lib/freshness";
 import { supabaseForUser } from "../supabase";
 
@@ -19,16 +19,16 @@ export default defineTool({
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     const products = data ?? [];
 
-    const owned = new Map<string, string[]>();
+    const owned = new Map<ActiveKey, string[]>();
     for (const p of products) {
-      for (const group of activesIn(p.ingredients ?? [])) {
+      for (const group of detectActives(p.ingredients ?? [])) {
         owned.set(group, [...(owned.get(group) ?? []), `${p.brand} ${p.name}`]);
       }
     }
 
     const conflicts = CONFLICTS.filter((c) => owned.has(c.a) && owned.has(c.b)).map((c) => ({
-      between: [c.a, c.b],
-      why: c.why,
+      between: [ACTIVES[c.a].label, ACTIVES[c.b].label],
+      note: c.note,
       products: [...(owned.get(c.a) ?? []), ...(owned.get(c.b) ?? [])],
     }));
 
