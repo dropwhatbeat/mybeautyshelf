@@ -95,16 +95,18 @@ function Onboarding() {
           </div>
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-card/60 px-6 text-center">
             <Lock className="h-5 w-5 text-primary" strokeWidth={1.75} />
-            <p className="font-display text-lg leading-snug">Take a Shelfie to unlock your scores</p>
+            <p className="font-display text-lg leading-snug">
+              Create an account to unlock your scores
+            </p>
             <p className="text-xs text-muted-foreground">
-              One selfie scores hydration, fine lines and pores, and reads your colour season.
+              Then one Shelfie scores hydration, fine lines and pores, and reads your colour season.
             </p>
           </div>
         </div>
 
         <div className="mt-auto space-y-3 pt-10">
           <Button asChild className="h-12 w-full text-base">
-            <Link to="/auth">Create your free account</Link>
+            <Link to="/auth">Create account to unlock</Link>
           </Button>
           <p className="text-center text-xs text-muted-foreground">
             No password — a magic link or Google. Your answers are saved to your shelf as soon as
@@ -202,7 +204,7 @@ function Onboarding() {
           disabled={saving}
           onClick={() => (last ? void finish("/add") : setStep(step + 1))}
         >
-          {last ? "Add your first product" : "Continue"}
+          {last ? (user ? "Add your first product" : "See my beauty profile") : "Continue"}
         </Button>
         <button
           type="button"
