@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AddRouteImport } from './routes/add'
 import { Route as BulkRouteImport } from './routes/bulk'
-import { Route as ColourRouteImport } from './routes/colour'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
@@ -37,11 +36,6 @@ const AddRoute = AddRouteImport.update({
 const BulkRoute = BulkRouteImport.update({
   id: '/bulk',
   path: '/bulk',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ColourRoute = ColourRouteImport.update({
-  id: '/colour',
-  path: '/colour',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InsightsRoute = InsightsRouteImport.update({
@@ -102,7 +96,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/add': typeof AddRoute
   '/bulk': typeof BulkRoute
-  '/colour': typeof ColourRoute
   '/insights': typeof InsightsRoute
   '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
@@ -118,7 +111,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/add': typeof AddRoute
   '/bulk': typeof BulkRoute
-  '/colour': typeof ColourRoute
   '/insights': typeof InsightsRoute
   '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
@@ -135,7 +127,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/add': typeof AddRoute
   '/bulk': typeof BulkRoute
-  '/colour': typeof ColourRoute
   '/insights': typeof InsightsRoute
   '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
@@ -153,7 +144,6 @@ export interface FileRouteTypes {
     | '/'
     | '/add'
     | '/bulk'
-    | '/colour'
     | '/insights'
     | '/mcp'
     | '/onboarding'
@@ -169,7 +159,6 @@ export interface FileRouteTypes {
     | '/'
     | '/add'
     | '/bulk'
-    | '/colour'
     | '/insights'
     | '/mcp'
     | '/onboarding'
@@ -185,7 +174,6 @@ export interface FileRouteTypes {
     | '/'
     | '/add'
     | '/bulk'
-    | '/colour'
     | '/insights'
     | '/mcp'
     | '/onboarding'
@@ -202,7 +190,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AddRoute: typeof AddRoute
   BulkRoute: typeof BulkRoute
-  ColourRoute: typeof ColourRoute
   InsightsRoute: typeof InsightsRoute
   McpRoute: typeof McpRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -236,13 +223,6 @@ declare module '@tanstack/react-router' {
       path: '/bulk'
       fullPath: '/bulk'
       preLoaderRoute: typeof BulkRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/colour': {
-      id: '/colour'
-      path: '/colour'
-      fullPath: '/colour'
-      preLoaderRoute: typeof ColourRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/insights': {
@@ -322,7 +302,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddRoute: AddRoute,
   BulkRoute: BulkRoute,
-  ColourRoute: ColourRoute,
   InsightsRoute: InsightsRoute,
   McpRoute: McpRoute,
   OnboardingRoute: OnboardingRoute,
