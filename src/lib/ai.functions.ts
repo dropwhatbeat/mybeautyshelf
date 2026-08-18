@@ -34,6 +34,7 @@ const bulkItemSchema = z.object({
   category: z.string().nullable(),
   size_ml: z.number().nullable(),
   pao_months: z.number().nullable(),
+  expiry_date: z.string().nullable().default(null),
   ingredients: z.array(z.string()),
   ingredients_readable: z.boolean(),
   notes: z.string().nullable(),
