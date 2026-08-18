@@ -15,6 +15,11 @@ export default defineTool({
     category: z.enum(CATEGORIES).default("other"),
     size_ml: z.number().positive().optional(),
     pao_months: z.number().int().positive().optional().describe("Period-after-opening in months."),
+    expiry_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional()
+      .describe("Printed expiry / best-before date, YYYY-MM-DD."),
     date_opened: z
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}$/)
@@ -39,6 +44,7 @@ export default defineTool({
         category: input.category,
         ...(input.size_ml === undefined ? {} : { size_ml: input.size_ml }),
         ...(input.pao_months === undefined ? {} : { pao_months: input.pao_months }),
+        ...(input.expiry_date === undefined ? {} : { expiry_date: input.expiry_date }),
         ...(input.date_opened === undefined ? {} : { date_opened: input.date_opened }),
         ...(input.ingredients === undefined ? {} : { ingredients: input.ingredients }),
         ...(input.notes === undefined ? {} : { notes: input.notes }),
