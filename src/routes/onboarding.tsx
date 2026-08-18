@@ -204,7 +204,7 @@ function Onboarding() {
           disabled={saving}
           onClick={() => (last ? void finish("/add") : setStep(step + 1))}
         >
-          {last ? "Add your first product" : "Continue"}
+          {last ? (user ? "Add your first product" : "See my beauty profile") : "Continue"}
         </Button>
         <button
           type="button"
