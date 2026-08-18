@@ -2,11 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
-import { Camera, Share2 } from "lucide-react";
+import { Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { friendlyError } from "@/lib/errors";
 
 import { AppShell, PageHeader } from "@/components/AppShell";
+import doodleFace from "@/assets/doodle-face.png";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
@@ -136,7 +137,14 @@ function Shelfie() {
             <img src={selfie} alt="Your shelfie" className="aspect-4/5 w-full object-cover" />
           ) : (
             <div className="flex aspect-4/5 flex-col items-center justify-center gap-2 text-muted-foreground">
-              <Camera className="h-7 w-7" />
+              <img
+                src={doodleFace}
+                alt=""
+                width={768}
+                height={768}
+                loading="lazy"
+                className="w-40 opacity-90"
+              />
               <span className="font-display text-lg text-foreground">Take a shelfie</span>
               <span className="px-10 text-center text-xs">
                 Face a window, keep your hair off your face, and skip the filters.

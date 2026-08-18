@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { toast } from "sonner";
 
 import { AppShell, PageHeader } from "@/components/AppShell";
+import doodleInsights from "@/assets/doodle-insights.png";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { ACTIVES, CONCERN_GUIDES, CONFLICTS, detectActives } from "@/lib/actives";
@@ -75,7 +76,20 @@ function Insights() {
 
   return (
     <AppShell>
-      <PageHeader title="Insights" subtitle="A read on the shelf you already own" />
+      <PageHeader
+        title="Insights"
+        subtitle="A read on the shelf you already own"
+        action={
+          <img
+            src={doodleInsights}
+            alt=""
+            width={768}
+            height={768}
+            loading="lazy"
+            className="mt-1 w-16 opacity-90"
+          />
+        }
+      />
 
       <div className="space-y-5 px-5">
         <p className="rounded-2xl bg-secondary px-4 py-3 text-xs leading-relaxed text-muted-foreground">
