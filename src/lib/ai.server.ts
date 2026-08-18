@@ -291,6 +291,7 @@ Return ONLY strict JSON of this shape:
 Rules:
 - One array entry per physical product, ordered left to right as they appear.
 - "position" is a short human hint for where it is, e.g. "tall white bottle, second from left".
+- Labels may be in any language; translate brand, name and ingredients into English (standard INCI names for ingredients).
 - Only report what is legibly visible. Unclear field -> null. NEVER guess or invent a brand, name or ingredient.
 - Ingredient lists are rarely legible in a group shot; return [] unless you can genuinely read them.
 - Skip objects that are not beauty products.`,
