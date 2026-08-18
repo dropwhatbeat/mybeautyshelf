@@ -118,14 +118,12 @@ function Shelfie() {
         fitzpatrick: res.face.fitzpatrick,
         overall: res.skin.overall,
         notes: res.skin.notes,
-        season: res.season,
         undertone: res.undertone,
       });
       await supabase
         .from("profiles")
         .update({
-          season_result: res.season,
-          season_payload: JSON.parse(JSON.stringify(res)),
+          undertone: res.undertone as "cool" | "neutral" | "warm",
           face_shape: res.face.shape,
           ...(res.face.fitzpatrick !== null ? { fitzpatrick: res.face.fitzpatrick } : {}),
         })
@@ -269,7 +267,16 @@ function Shelfie() {
               <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                 {result.undertone} undertone
               </p>
-              <h2 className="mt-1 font-display text-3xl">{result.season}</h2>
+              <div className="mt-1 flex items-center gap-2">
+                <h2 className="font-display text-3xl">{result.season}</h2>
+                <span className="rounded-full border border-border px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                  Beta
+                </span>
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Colour season is still experimental and can shift between photos, so we only save
+                your undertone.
+              </p>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 {result.rationale}
               </p>

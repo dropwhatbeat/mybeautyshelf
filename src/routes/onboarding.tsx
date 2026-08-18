@@ -1,13 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, Lock, ScanFace } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Chip } from "@/components/Chip";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { CONCERNS } from "@/lib/actives";
-import { saveDraft } from "@/lib/onboarding-draft";
+import { readDraft, saveDraft } from "@/lib/onboarding-draft";
 import {
   AGE_RANGES,
   AVOID_ITEMS,
@@ -52,6 +52,19 @@ function Onboarding() {
   const [saving, setSaving] = useState(false);
   const [teaser, setTeaser] = useState(false);
   const [manualUndertone, setManualUndertone] = useState(false);
+
+  useEffect(() => {
+    const draft = readDraft();
+    if (!draft) return;
+    setSkinType((v) => v ?? draft.skin_type);
+    setConcerns((v) => (v.length ? v : draft.concerns));
+    setUndertone((v) => v ?? draft.undertone);
+    setAgeRange((v) => v ?? draft.age_range);
+    setSpfHabit((v) => v ?? draft.spf_habit);
+    setSensitivity((v) => v ?? draft.sensitivity);
+    setAvoidList((v) => (v.length ? v : draft.avoid_list));
+    setPregnancy((v) => v ?? draft.pregnancy);
+  }, []);
 
   async function finish(to: "/add" | "/shelfie" = "/add") {
     if (loading) return;
@@ -259,7 +272,7 @@ function Onboarding() {
             <ul className="mt-3 space-y-2 text-xs leading-relaxed text-muted-foreground">
               {[
                 "Your undertone — cool, neutral or warm",
-                "Your colour season, with best shades and colours to skip",
+                "Your colour season, with best shades and colours to skip (beta)",
                 "Skin scores: hydration, fine lines, pores, redness, evenness",
                 "Oil in your T-zone and cheeks, plus an under-eye read",
                 "Skin depth and face shape, with blush and contour placement tips",
