@@ -73,6 +73,7 @@ type Draft = {
   category: Category;
   size_ml: string;
   pao_months: string;
+  expiry_date: string;
   ingredients: string[];
 };
 
@@ -121,6 +122,7 @@ function AddProduct() {
         category: (result.category as Category | null) ?? "other",
         size_ml: result.size_ml ? String(result.size_ml) : "",
         pao_months: result.pao_months ? String(result.pao_months) : "",
+        expiry_date: result.expiry_date ?? "",
         ingredients: result.ingredients,
       });
       setPhase("confirm");
@@ -148,6 +150,7 @@ function AddProduct() {
           ingredients: draft.ingredients,
           size_ml: draft.size_ml ? Number(draft.size_ml) : null,
           pao_months: draft.pao_months ? Number(draft.pao_months) : null,
+          expiry_date: draft.expiry_date || null,
           date_opened: dateFor(openKey),
         })
         .select("id")
@@ -324,6 +327,14 @@ function AddProduct() {
                 />
               </Field>
             </div>
+            <Field label="Printed expiry (EXP on the box)">
+              <Input
+                type="date"
+                value={draft.expiry_date}
+                onChange={(e) => setDraft({ ...draft, expiry_date: e.target.value })}
+                className="h-12"
+              />
+            </Field>
             <Field label={`Ingredients (${draft.ingredients.length})`}>
               <Textarea
                 rows={4}

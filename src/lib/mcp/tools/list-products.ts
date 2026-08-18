@@ -24,7 +24,7 @@ export default defineTool({
     const { data, error } = await query;
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     const products = (data ?? []).map((p) => {
-      const f = freshnessFor(p.date_opened, p.pao_months);
+      const f = freshnessFor(p.date_opened, p.pao_months, p.expiry_date);
       return {
         id: p.id,
         brand: p.brand,
@@ -33,6 +33,9 @@ export default defineTool({
         status: p.status,
         date_opened: p.date_opened,
         pao_months: p.pao_months,
+        expiry_date: p.expiry_date,
+        open_by: f.openBy ? f.openBy.toISOString().slice(0, 10) : null,
+        days_to_open_by: f.daysToOpenBy,
         freshness: f.status,
         days_remaining: f.daysRemaining,
         ingredients: p.ingredients,

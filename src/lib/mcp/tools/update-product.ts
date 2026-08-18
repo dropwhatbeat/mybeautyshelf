@@ -12,6 +12,7 @@ export default defineTool({
     id: z.string().uuid().describe("Product id from list_products."),
     date_opened: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
     pao_months: z.number().int().positive().nullable().optional(),
+    expiry_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
     notes: z.string().nullable().optional(),
     status: z.enum(["active", "finished"]).optional(),
   },

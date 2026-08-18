@@ -8,8 +8,8 @@ import doodleShelf from "@/assets/doodle-shelf.png";
 const FEATURES = [
   {
     icon: CalendarClock,
-    title: "Freshness at a glance",
-    body: "Every product gets an opened date and a period-after-opening clock, so nothing quietly turns.",
+    title: "Never waste a good product",
+    body: "Opened date, period-after-opening and the printed expiry in one clock — we nudge you to open the sealed ones in time to actually finish them.",
   },
   {
     icon: Sparkles,

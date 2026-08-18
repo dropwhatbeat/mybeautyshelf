@@ -56,8 +56,8 @@ function ShelfPage() {
     if (sort === "category")
       return [...list].sort((a, b) => a.category.localeCompare(b.category));
     return [...list].sort((a, b) => {
-      const av = freshnessFor(a.date_opened, a.pao_months).daysRemaining ?? 99_999;
-      const bv = freshnessFor(b.date_opened, b.pao_months).daysRemaining ?? 99_999;
+      const av = freshnessFor(a.date_opened, a.pao_months, a.expiry_date).daysRemaining ?? 99_999;
+      const bv = freshnessFor(b.date_opened, b.pao_months, b.expiry_date).daysRemaining ?? 99_999;
       return av - bv;
     });
   }, [products, sort]);

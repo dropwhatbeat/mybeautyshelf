@@ -58,6 +58,7 @@ export type Database = {
           category: Database["public"]["Enums"]["product_category"]
           date_added: string
           date_opened: string | null
+          expiry_date: string | null
           id: string
           image_back_url: string | null
           image_front_url: string | null
@@ -74,6 +75,7 @@ export type Database = {
           category?: Database["public"]["Enums"]["product_category"]
           date_added?: string
           date_opened?: string | null
+          expiry_date?: string | null
           id?: string
           image_back_url?: string | null
           image_front_url?: string | null
@@ -90,6 +92,7 @@ export type Database = {
           category?: Database["public"]["Enums"]["product_category"]
           date_added?: string
           date_opened?: string | null
+          expiry_date?: string | null
           id?: string
           image_back_url?: string | null
           image_front_url?: string | null
