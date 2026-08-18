@@ -1,0 +1,218 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.2",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://fcjjbxnoifltajisshjq.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "vanity-shelf",
+      "version": "0.1.0",
+      "title": "Vanity Shelf"
+    },
+    "tools": [
+      {
+        "name": "list_products",
+        "title": "List shelf products",
+        "description": "List the signed-in user's beauty products with freshness status, category and ingredients.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "status": {
+              "default": "active",
+              "description": "Which products to return.",
+              "type": "string",
+              "enum": [
+                "active",
+                "finished",
+                "all"
+              ]
+            },
+            "category": {
+              "description": "Optional category filter, e.g. serum or spf.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "add_product",
+        "title": "Add a product to the shelf",
+        "description": "Add a beauty product to the signed-in user's shelf.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "brand": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Brand name."
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Product name."
+            },
+            "category": {
+              "default": "other",
+              "type": "string",
+              "enum": [
+                "cleanser",
+                "serum",
+                "moisturiser",
+                "spf",
+                "treatment",
+                "makeup",
+                "other"
+              ]
+            },
+            "size_ml": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "pao_months": {
+              "description": "Period-after-opening in months.",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "date_opened": {
+              "description": "Date opened, YYYY-MM-DD.",
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "ingredients": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "brand",
+            "name"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_product",
+        "title": "Update a shelf product",
+        "description": "Update a product on the signed-in user's shelf: open date, period-after-opening, notes or status.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "Product id from list_products."
+            },
+            "date_opened": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "pao_months": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "notes": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "active",
+                "finished"
+              ]
+            }
+          },
+          "required": [
+            "id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_skin_profile",
+        "title": "Get skin profile",
+        "description": "Read the signed-in user's skin type, concerns, undertone and colour-season result.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "routine_check",
+        "title": "Check routine conflicts and expiries",
+        "description": "Analyse the signed-in user's active shelf for ingredient conflicts and products expiring soon or already expired.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
