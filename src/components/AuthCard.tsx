@@ -8,27 +8,21 @@ import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 
 export function AuthCard() {
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin },
-        });
-        if (error) throw error;
-        toast.success("Account created — welcome to Shelf.");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-      }
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: window.location.origin, shouldCreateUser: true },
+      });
+      if (error) throw error;
+      setSent(true);
+      toast.success("Check your inbox for your sign-in link.");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -62,40 +56,33 @@ export function AuthCard() {
             type="email"
             required
             autoComplete="email"
+            placeholder="you@example.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="h-12"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            required
-            minLength={6}
-            autoComplete={mode === "signup" ? "new-password" : "current-password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setSent(false);
+            }}
             className="h-12"
           />
         </div>
         <Button type="submit" disabled={busy} className="h-12 w-full text-base">
-          {mode === "signup" ? "Create account" : "Sign in"}
+          {busy ? "Sending link…" : sent ? "Resend sign-in link" : "Email me a sign-in link"}
         </Button>
       </form>
+
+      {sent && (
+        <p className="mt-3 text-sm text-muted-foreground">
+          Link sent to {email}. Open it on this device to finish signing in — no password needed.
+        </p>
+      )}
 
       <Button variant="outline" onClick={google} className="mt-3 h-12 w-full text-base">
         Continue with Google
       </Button>
 
-      <button
-        type="button"
-        onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-        className="mt-6 text-sm text-muted-foreground underline underline-offset-4"
-      >
-        {mode === "signin" ? "New here? Create an account" : "Already have an account? Sign in"}
-      </button>
+      <p className="mt-6 text-xs text-muted-foreground">
+        No passwords here. Your email is your account — new addresses are signed up automatically.
+      </p>
     </div>
   );
 }
