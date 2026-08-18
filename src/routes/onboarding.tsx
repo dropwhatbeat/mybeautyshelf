@@ -8,6 +8,13 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { CONCERNS } from "@/lib/actives";
 import { saveDraft } from "@/lib/onboarding-draft";
+import {
+  AGE_RANGES,
+  AVOID_ITEMS,
+  PREGNANCY_OPTIONS,
+  SENSITIVITY_LEVELS,
+  SPF_HABITS,
+} from "@/lib/profile-options";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import doodleFace from "@/assets/doodle-face.png";
@@ -37,13 +44,27 @@ function Onboarding() {
   const [skinType, setSkinType] = useState<SkinType | null>(null);
   const [concerns, setConcerns] = useState<string[]>([]);
   const [undertone, setUndertone] = useState<Undertone | null>(null);
+  const [ageRange, setAgeRange] = useState<string | null>(null);
+  const [spfHabit, setSpfHabit] = useState<string | null>(null);
+  const [sensitivity, setSensitivity] = useState<string | null>(null);
+  const [avoidList, setAvoidList] = useState<string[]>([]);
+  const [pregnancy, setPregnancy] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [teaser, setTeaser] = useState(false);
 
   async function finish(to: "/add" | "/shelfie" = "/add") {
     if (loading) return;
     if (!user) {
-      saveDraft({ skin_type: skinType, concerns, undertone });
+      saveDraft({
+        skin_type: skinType,
+        concerns,
+        undertone,
+        age_range: ageRange,
+        spf_habit: spfHabit,
+        sensitivity,
+        avoid_list: avoidList,
+        pregnancy,
+      });
       setTeaser(true);
       return;
     }
@@ -54,6 +75,11 @@ function Onboarding() {
         skin_type: skinType,
         concerns,
         undertone,
+        age_range: ageRange,
+        spf_habit: spfHabit,
+        sensitivity,
+        avoid_list: avoidList,
+        pregnancy,
         onboarded: true,
       })
       .eq("id", user.id);
