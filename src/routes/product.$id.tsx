@@ -11,9 +11,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { ACTIVES, ingredientActive } from "@/lib/actives";
+import { bandText, profileIsEmpty, scoreProduct } from "@/lib/fit";
 import { freshnessFor, freshnessWord, dotClass } from "@/lib/freshness";
 import { supabase } from "@/integrations/supabase/client";
-import { useProduct, useReviews, useUpdateProduct } from "@/lib/queries";
+import { useProduct, useProfile, useReviews, useUpdateProduct } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 
