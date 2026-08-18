@@ -23,11 +23,32 @@ export type SkinScores = {
   hydration: number;
   fine_lines: number;
   pores: number;
+  redness: number;
+  evenness: number;
+  under_eye: number;
+  oil_tzone: number;
+  oil_cheeks: number;
   overall: number;
-  notes: { hydration: string; fine_lines: string; pores: string };
+  notes: {
+    hydration: string;
+    fine_lines: string;
+    pores: string;
+    redness: string;
+    evenness: string;
+    under_eye: string;
+    oil: string;
+  };
 };
 
-export type ShelfieAnalysis = ColourAnalysis & { skin: SkinScores };
+export type FaceRead = {
+  shape: string;
+  confidence: string;
+  rationale: string;
+  tips: string[];
+  fitzpatrick: number | null;
+};
+
+export type ShelfieAnalysis = ColourAnalysis & { skin: SkinScores; face: FaceRead };
 
 export type BulkItem = ProductExtraction & { position: string | null };
 
