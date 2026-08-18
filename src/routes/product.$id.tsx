@@ -11,9 +11,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { ACTIVES, ingredientActive } from "@/lib/actives";
+import { bandText, profileIsEmpty, scoreProduct } from "@/lib/fit";
 import { freshnessFor, freshnessWord, dotClass } from "@/lib/freshness";
 import { supabase } from "@/integrations/supabase/client";
-import { useProduct, useReviews, useUpdateProduct } from "@/lib/queries";
+import { useProduct, useProfile, useReviews, useUpdateProduct, type Product, type Profile } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -43,6 +44,7 @@ function ProductDetail() {
   const qc = useQueryClient();
   const { data: product, isLoading } = useProduct(id);
   const { data: reviews } = useReviews(id);
+  const { data: profile } = useProfile(user?.id);
   const update = useUpdateProduct();
   const [rating, setRating] = useState(4);
   const [verdict, setVerdict] = useState<"repurchase" | "undecided" | "never_again">("repurchase");
@@ -136,6 +138,8 @@ function ProductDetail() {
             </p>
           </div>
         </div>
+
+        <FitCard product={product} profile={profile ?? null} />
 
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
@@ -286,6 +290,76 @@ function ProductDetail() {
           </Button>
         </div>
       </div>
+    </div>
+  );
+}
+
+function FitCard({ product, profile }: { product: Product; profile: Profile | null }) {
+  if (profileIsEmpty(profile)) {
+    return (
+      <div className="mt-4 rounded-2xl border border-border bg-card p-4">
+        <h2 className="font-display text-lg">Fit for your skin</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Complete your beauty profile and we'll score how this product suits your skin.
+        </p>
+        <Button asChild variant="outline" className="mt-3 h-10 text-xs">
+          <Link to="/settings">Complete my profile</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  const fit = scoreProduct(product, profile);
+  const noIngredients = product.ingredients.length === 0;
+
+  return (
+    <div className="mt-4 rounded-2xl border border-border bg-card p-4">
+      <div className="flex items-baseline justify-between">
+        <h2 className="font-display text-lg">Fit for your skin</h2>
+        {noIngredients ? null : (
+          <p className={cn("font-display text-2xl", bandText[fit.band])}>{fit.score}</p>
+        )}
+      </div>
+      <p className={cn("mt-0.5 text-sm font-medium", noIngredients ? "" : bandText[fit.band])}>
+        {fit.bandLabel}
+      </p>
+      {fit.verdict ? (
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{fit.verdict}</p>
+      ) : null}
+
+      {fit.helps.length > 0 && (
+        <div className="mt-4">
+          <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+            Why it helps
+          </p>
+          <ul className="mt-2 space-y-1.5">
+            {fit.helps.map((h) => (
+              <li key={h} className="text-xs leading-relaxed text-foreground">
+                {h}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {fit.cautions.length > 0 && (
+        <div className="mt-4">
+          <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+            Watch-outs
+          </p>
+          <ul className="mt-2 space-y-1.5">
+            {fit.cautions.map((c) => (
+              <li key={c} className="text-xs leading-relaxed text-foreground">
+                {c}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
+        General cosmetic-usage guidance based on your profile, not medical advice.
+      </p>
     </div>
   );
 }

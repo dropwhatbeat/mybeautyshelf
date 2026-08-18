@@ -8,6 +8,7 @@ import doodleInsights from "@/assets/doodle-insights.png";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { ACTIVES, CONCERN_GUIDES, CONFLICTS, detectActives } from "@/lib/actives";
+import { bandText, profileIsEmpty, scoreProduct } from "@/lib/fit";
 import { freshnessFor } from "@/lib/freshness";
 import { useProducts, useProfile, useUpdateProduct, type Product } from "@/lib/queries";
 
@@ -72,6 +73,14 @@ function Insights() {
       const covered = guide.keywords.some((k) => allIngredients.some((i) => i.includes(k)));
       return { concern, covered, suggestion: guide.suggestion };
     });
+  }, [active, profile]);
+
+  const fits = useMemo(() => {
+    if (profileIsEmpty(profile)) return [];
+    return active
+      .filter((p) => p.ingredients.length > 0)
+      .map((p) => ({ p, fit: scoreProduct(p, profile) }))
+      .sort((a, b) => a.fit.score - b.fit.score);
   }, [active, profile]);
 
   return (
@@ -147,6 +156,48 @@ function Insights() {
                 </li>
               ))}
             </ul>
+          )}
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card p-4">
+          <h2 className="font-display text-xl">Fit with your profile</h2>
+          {profileIsEmpty(profile) ? (
+            <p className="mt-2 text-sm text-muted-foreground">
+              Complete your beauty profile and we'll score every product against your skin.
+            </p>
+          ) : fits.length === 0 ? (
+            <p className="mt-2 text-sm text-muted-foreground">
+              Add ingredient photos to your products and we'll score how each one fits your skin.
+            </p>
+          ) : (
+            <>
+              <ul className="mt-3 space-y-3">
+                {fits.slice(0, 5).map(({ p, fit }) => (
+                  <li key={p.id} className="rounded-xl border border-border p-3">
+                    <Link to="/product/$id" params={{ id: p.id }} className="block">
+                      <div className="flex items-baseline justify-between gap-3">
+                        <p className="font-display text-base leading-snug">{p.name}</p>
+                        <span className={`font-display text-lg ${bandText[fit.band]}`}>
+                          {fit.score}
+                        </span>
+                      </div>
+                      <p className={`mt-0.5 text-xs font-medium ${bandText[fit.band]}`}>
+                        {fit.bandLabel}
+                      </p>
+                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                        {fit.verdict ?? fit.cautions[0] ?? fit.helps[0] ?? "Nothing flagged against your profile."}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              {fits.length > 1 ? (
+                <p className="mt-3 text-xs text-muted-foreground">
+                  Best match on your shelf: {fits[fits.length - 1]!.p.name} (
+                  {fits[fits.length - 1]!.fit.score}).
+                </p>
+              ) : null}
+            </>
           )}
         </section>
 

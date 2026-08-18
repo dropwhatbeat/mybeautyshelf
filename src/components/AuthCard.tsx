@@ -49,7 +49,7 @@ export function AuthCard() {
       />
       <p className="text-[11px] uppercase tracking-[0.3em] text-primary">My Beauty Shelf</p>
       <h1 className="mt-3 font-display text-4xl leading-tight text-foreground">
-        Your skincare and makeup shelf, finally in one place.
+        Your skincare and makeup shelf.
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
         Track what's fresh, what clashes, and what's actually working — across every brand on your
