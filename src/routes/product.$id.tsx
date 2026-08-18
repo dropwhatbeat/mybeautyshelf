@@ -44,6 +44,7 @@ function ProductDetail() {
   const qc = useQueryClient();
   const { data: product, isLoading } = useProduct(id);
   const { data: reviews } = useReviews(id);
+  const { data: profile } = useProfile(user?.id);
   const update = useUpdateProduct();
   const [rating, setRating] = useState(4);
   const [verdict, setVerdict] = useState<"repurchase" | "undecided" | "never_again">("repurchase");
