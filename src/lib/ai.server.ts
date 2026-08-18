@@ -225,14 +225,17 @@ export async function analyseShelfie(selfie: string): Promise<ShelfieAnalysis> {
         content: [
           {
             type: "text",
-            text: `You are a cosmetic beauty-counter assistant. From the selfie, give (a) a seasonal colour read and (b) a cosmetic appearance score in three areas, the way an in-store skin scanner does. Return ONLY strict JSON:
-{"season": string, "undertone": "cool"|"neutral"|"warm", "best_colours": [6 hex strings like "#aabbcc"], "avoid_colours": [3 hex strings], "rationale": string, "skin": {"hydration": 0-100, "fine_lines": 0-100, "pores": 0-100, "notes": {"hydration": string, "fine_lines": string, "pores": string}}}
+            text: `You are a cosmetic beauty-counter assistant. From the selfie, give (a) a seasonal colour read, (b) a cosmetic appearance score the way an in-store skin scanner does, and (c) a face shape read for makeup placement. Return ONLY strict JSON:
+{"season": string, "undertone": "cool"|"neutral"|"warm", "best_colours": [6 hex strings like "#aabbcc"], "avoid_colours": [3 hex strings], "rationale": string, "skin": {"hydration": 0-100, "fine_lines": 0-100, "pores": 0-100, "redness": 0-100, "evenness": 0-100, "under_eye": 0-100, "oil_tzone": 0-100, "oil_cheeks": 0-100, "notes": {"hydration": string, "fine_lines": string, "pores": string, "redness": string, "evenness": string, "under_eye": string, "oil": string}}, "face": {"shape": "oval"|"round"|"square"|"heart"|"oblong"|"diamond", "confidence": "low"|"medium"|"high", "rationale": string, "tips": [2-3 short strings], "fitzpatrick": 1-6}}
 
 Rules:
 - season is one of the 12 classic seasons, e.g. "Soft Autumn", "Bright Winter".
 - rationale is ONE warm, plain-language paragraph about colour harmony. Around 50 words.
-- Scores are cosmetic appearance only, higher is better: hydration = how plump and dewy the skin looks; fine_lines = how smooth the skin looks; pores = how refined the skin texture looks.
+- Scores are cosmetic appearance only, higher is better: hydration = how plump and dewy the skin looks; fine_lines = how smooth the skin looks; pores = how refined the skin texture looks; redness = how calm and even in tone the skin looks (higher = calmer); evenness = how even the tone looks, free of dark spots; under_eye = how bright and rested the under-eye area looks; oil_tzone and oil_cheeks = how balanced (not shiny) those zones look.
 - Each note is ONE short, kind sentence (max 18 words) describing what you see and one cosmetic suggestion.
+- face.shape is the closest match only, never a verdict; confidence reflects how clearly hair, angle and lighting let you judge it.
+- face.rationale is ONE short sentence. face.tips are 2-3 flattering makeup placement ideas (blush, contour, brows) — never "flaws to fix".
+- face.fitzpatrick is the closest skin depth 1-6 for shade matching, or null if unclear.
 - Never diagnose, never mention medical or health conditions, never comment on age, weight or attractiveness.`,
           },
           { type: "image_url", image_url: { url: selfie } },
@@ -255,21 +258,51 @@ Rules:
   }
   const notesRaw = (skinRaw["notes"] ?? {}) as Record<string, unknown>;
   const undertoneRaw = (str(parsed["undertone"]) ?? "neutral").toLowerCase();
+  const faceRaw = (parsed["face"] ?? {}) as Record<string, unknown>;
+  const shapeRaw = (str(faceRaw["shape"]) ?? "").toLowerCase();
+  const SHAPES = ["oval", "round", "square", "heart", "oblong", "diamond"];
+  const confidenceRaw = (str(faceRaw["confidence"]) ?? "medium").toLowerCase();
+  const tipsRaw = Array.isArray(faceRaw["tips"]) ? faceRaw["tips"] : [];
+  const fitz = num(faceRaw["fitzpatrick"]);
+  const redness = score(skinRaw["redness"]) ?? 70;
+  const evenness = score(skinRaw["evenness"]) ?? 70;
+  const underEye = score(skinRaw["under_eye"]) ?? 70;
+  const oilTzone = score(skinRaw["oil_tzone"]) ?? 70;
+  const oilCheeks = score(skinRaw["oil_cheeks"]) ?? 70;
   return {
     season,
     undertone: ["cool", "neutral", "warm"].includes(undertoneRaw) ? undertoneRaw : "neutral",
     best_colours: best,
     avoid_colours: avoid,
     rationale: str(parsed["rationale"]) ?? "",
+    face: {
+      shape: SHAPES.includes(shapeRaw) ? shapeRaw : "oval",
+      confidence: ["low", "medium", "high"].includes(confidenceRaw) ? confidenceRaw : "medium",
+      rationale: str(faceRaw["rationale"]) ?? "",
+      tips: tipsRaw
+        .map((t) => (typeof t === "string" ? t.trim() : ""))
+        .filter((t) => t.length > 1)
+        .slice(0, 3),
+      fitzpatrick: fitz !== null && fitz >= 1 && fitz <= 6 ? Math.round(fitz) : null,
+    },
     skin: {
       hydration,
       fine_lines: fineLines,
       pores,
+      redness,
+      evenness,
+      under_eye: underEye,
+      oil_tzone: oilTzone,
+      oil_cheeks: oilCheeks,
       overall: Math.round((hydration + fineLines + pores) / 3),
       notes: {
         hydration: str(notesRaw["hydration"]) ?? "",
         fine_lines: str(notesRaw["fine_lines"]) ?? "",
         pores: str(notesRaw["pores"]) ?? "",
+        redness: str(notesRaw["redness"]) ?? "",
+        evenness: str(notesRaw["evenness"]) ?? "",
+        under_eye: str(notesRaw["under_eye"]) ?? "",
+        oil: str(notesRaw["oil"]) ?? "",
       },
     },
   };
