@@ -119,8 +119,8 @@ function Insights() {
           <h2 className="font-display text-xl">Expiring soon</h2>
           {expiring.length === 0 ? (
             <p className="mt-2 text-sm text-muted-foreground">
-              Nothing is close to its date. Products without a date opened show up as grey on your
-              shelf.
+              Nothing you've opened is close to its date. Products with no dates at all show up as
+              grey on your shelf.
             </p>
           ) : (
             <ul className="mt-3 space-y-3">
@@ -162,6 +162,42 @@ function Insights() {
                       Still good
                     </Button>
                   </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card p-4">
+          <h2 className="font-display text-xl">Open these next</h2>
+          {toOpen.length === 0 ? (
+            <p className="mt-2 text-sm text-muted-foreground">
+              No sealed product is running out of runway. Add the printed expiry date to unopened
+              products and we'll tell you when to break the seal.
+            </p>
+          ) : (
+            <ul className="mt-3 space-y-3">
+              {toOpen.map(({ p, f }) => (
+                <li key={p.id} className="rounded-xl border border-border p-3">
+                  <Link to="/product/$id" params={{ id: p.id }} className="block">
+                    <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                      {p.brand}
+                    </p>
+                    <p className="font-display text-base">{p.name}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{f.label}</p>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    className="mt-3 h-10 w-full text-xs"
+                    onClick={() =>
+                      update.mutate(
+                        { id: p.id, patch: { date_opened: new Date().toISOString().slice(0, 10) } },
+                        { onSuccess: () => toast.success("Marked as opened today.") },
+                      )
+                    }
+                  >
+                    I opened it today
+                  </Button>
                 </li>
               ))}
             </ul>
