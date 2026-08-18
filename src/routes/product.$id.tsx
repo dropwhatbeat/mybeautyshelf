@@ -139,6 +139,8 @@ function ProductDetail() {
           </div>
         </div>
 
+        <FitCard product={product} profile={profile ?? null} />
+
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <Label className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
