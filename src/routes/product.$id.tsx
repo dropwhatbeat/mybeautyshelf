@@ -144,6 +144,7 @@ function ProductDetail() {
             <Label className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
               Date opened
             </Label>
+            {null}
             <Input
               type="date"
               className="h-12"
