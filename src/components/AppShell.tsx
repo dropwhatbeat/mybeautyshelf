@@ -1,13 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { Grid2x2, Plus, Sparkles, Palette, Settings } from "lucide-react";
+import { Grid2x2, Sparkles, ScanFace, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
 
 const NAV = [
   { to: "/", label: "Shelf", icon: Grid2x2 },
   { to: "/insights", label: "Insights", icon: Sparkles },
-  { to: "/add", label: "Add", icon: Plus },
-  { to: "/colour", label: "Colour", icon: Palette },
-  { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/shelfie", label: "Shelfie", icon: ScanFace },
+  { to: "/settings", label: "My skin", icon: UserRound },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
