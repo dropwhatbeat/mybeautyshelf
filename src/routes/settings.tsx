@@ -21,9 +21,9 @@ const UNDERTONES: Undertone[] = ["cool", "neutral", "warm"];
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — Shelf" },
+      { title: "My skin profile — My Beauty Shelf" },
       { name: "description", content: "Your skin profile, appearance and account data." },
-      { property: "og:title", content: "Settings — Shelf" },
+      { property: "og:title", content: "My skin profile — My Beauty Shelf" },
       { property: "og:description", content: "Your skin profile, appearance and account data." },
     ],
   }),
@@ -61,6 +61,7 @@ function Settings() {
         .remove(files.map((f) => `${user.id}/${f.name}`));
     }
     await supabase.from("products").delete().eq("user_id", user.id);
+    await supabase.from("skin_checks").delete().eq("user_id", user.id);
     await patch({ season_result: null, season_payload: null });
     void qc.invalidateQueries();
     toast.success("Your shelf has been cleared.");
@@ -69,7 +70,7 @@ function Settings() {
 
   return (
     <AppShell>
-      <PageHeader title="Settings" {...(user?.email ? { subtitle: user.email } : {})} />
+      <PageHeader title="My skin profile" {...(user?.email ? { subtitle: user.email } : {})} />
 
       <div className="space-y-5 px-5">
         <section className="rounded-2xl border border-border bg-card p-4">
@@ -120,7 +121,7 @@ function Settings() {
           </div>
           {profile?.season_result ? (
             <p className="mt-3 text-sm text-muted-foreground">
-              Colour analysis says: <span className="text-foreground">{profile.season_result}</span>
+              Your Shelfie says: <span className="text-foreground">{profile.season_result}</span>
             </p>
           ) : null}
         </section>
@@ -139,7 +140,7 @@ function Settings() {
         <section className="rounded-2xl border border-border bg-card p-4">
           <h2 className="font-display text-xl">Your data</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Photos live in private storage only you can read. Selfies used for colour analysis are
+            Photos live in private storage only you can read. Shelfies are
             never stored.
           </p>
           <Button

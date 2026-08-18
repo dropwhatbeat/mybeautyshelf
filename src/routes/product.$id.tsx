@@ -20,12 +20,12 @@ import { useQueryClient } from "@tanstack/react-query";
 export const Route = createFileRoute("/product/$id")({
   head: () => ({
     meta: [
-      { title: "Product details — Shelf" },
+      { title: "Product details — My Beauty Shelf" },
       {
         name: "description",
         content: "Ingredients, flagged actives and freshness for a product on your shelf.",
       },
-      { property: "og:title", content: "Product details — Shelf" },
+      { property: "og:title", content: "Product details — My Beauty Shelf" },
       {
         property: "og:description",
         content: "Ingredients, flagged actives and freshness for a product on your shelf.",

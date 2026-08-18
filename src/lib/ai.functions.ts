@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
-  analyseColourFromSelfie,
+  analyseShelfie as analyseShelfieServer,
   bulkChatTurn,
   extractProductFromPhotos,
   extractProductsFromShelfPhoto,
@@ -18,10 +18,10 @@ export const extractProduct = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => extractProductFromPhotos(data.front, data.back ?? null));
 
-export const analyseColour = createServerFn({ method: "POST" })
+export const analyseShelfie = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({ selfie: dataUrl }).parse(data))
-  .handler(async ({ data }) => analyseColourFromSelfie(data.selfie));
+  .handler(async ({ data }) => analyseShelfieServer(data.selfie));
 
 export const extractProductsBulk = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

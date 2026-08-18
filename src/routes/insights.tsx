@@ -13,12 +13,12 @@ import { useProducts, useProfile, useUpdateProduct, type Product } from "@/lib/q
 export const Route = createFileRoute("/insights")({
   head: () => ({
     meta: [
-      { title: "Insights — Shelf" },
+      { title: "Insights — My Beauty Shelf" },
       {
         name: "description",
         content: "What's expiring, what's often not layered together, and where your shelf has gaps.",
       },
-      { property: "og:title", content: "Insights — Shelf" },
+      { property: "og:title", content: "Insights — My Beauty Shelf" },
       {
         property: "og:description",
         content: "What's expiring, what's often not layered together, and where your shelf has gaps.",
@@ -79,7 +79,7 @@ function Insights() {
 
       <div className="space-y-5 px-5">
         <p className="rounded-2xl bg-secondary px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-          Shelf offers general cosmetic-usage guidance, not medical advice. Nothing here diagnoses a
+          Beauty Shelf offers general cosmetic-usage guidance, not medical advice. Nothing here diagnoses a
           skin condition — if something feels wrong on your skin, a professional is the right call.
         </p>
 
@@ -163,7 +163,7 @@ function Insights() {
           <h2 className="font-display text-xl">Shelf gaps</h2>
           {gaps.length === 0 ? (
             <p className="mt-2 text-sm text-muted-foreground">
-              Add your concerns in Settings and we'll check your shelf against them.
+              Add your concerns in My skin profile and we'll check your shelf against them.
             </p>
           ) : (
             <ul className="mt-3 space-y-3">

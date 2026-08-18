@@ -19,6 +19,16 @@ export type ColourAnalysis = {
   rationale: string;
 };
 
+export type SkinScores = {
+  hydration: number;
+  fine_lines: number;
+  pores: number;
+  overall: number;
+  notes: { hydration: string; fine_lines: string; pores: string };
+};
+
+export type ShelfieAnalysis = ColourAnalysis & { skin: SkinScores };
+
 export type BulkItem = ProductExtraction & { position: string | null };
 
 export type BulkChatTurn = { role: "user" | "assistant"; content: string };
@@ -173,6 +183,75 @@ Rules:
 }
 
 function coerceItem(raw: Record<string, unknown>): BulkItem {
+  return coerceItemInner(raw);
+}
+
+function score(v: unknown): number | null {
+  const n = typeof v === "number" ? v : typeof v === "string" ? parseFloat(v) : NaN;
+  if (!Number.isFinite(n)) return null;
+  return Math.max(0, Math.min(100, Math.round(n)));
+}
+
+export async function analyseShelfie(selfie: string): Promise<ShelfieAnalysis> {
+  const raw = await callGateway({
+    model: "google/gemini-3.6-flash",
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: `You are a cosmetic beauty-counter assistant. From the selfie, give (a) a seasonal colour read and (b) a cosmetic appearance score in three areas, the way an in-store skin scanner does. Return ONLY strict JSON:
+{"season": string, "undertone": "cool"|"neutral"|"warm", "best_colours": [6 hex strings like "#aabbcc"], "avoid_colours": [3 hex strings], "rationale": string, "skin": {"hydration": 0-100, "fine_lines": 0-100, "pores": 0-100, "notes": {"hydration": string, "fine_lines": string, "pores": string}}}
+
+Rules:
+- season is one of the 12 classic seasons, e.g. "Soft Autumn", "Bright Winter".
+- rationale is ONE warm, plain-language paragraph about colour harmony. Around 50 words.
+- Scores are cosmetic appearance only, higher is better: hydration = how plump and dewy the skin looks; fine_lines = how smooth the skin looks; pores = how refined the skin texture looks.
+- Each note is ONE short, kind sentence (max 18 words) describing what you see and one cosmetic suggestion.
+- Never diagnose, never mention medical or health conditions, never comment on age, weight or attractiveness.`,
+          },
+          { type: "image_url", image_url: { url: selfie } },
+        ],
+      },
+    ],
+  });
+  const parsed = parseJson(raw);
+  const best = hexes(parsed?.["best_colours"], 6);
+  const avoid = hexes(parsed?.["avoid_colours"], 3);
+  const season = str(parsed?.["season"]);
+  const skinRaw = (parsed?.["skin"] ?? {}) as Record<string, unknown>;
+  const hydration = score(skinRaw["hydration"]);
+  const fineLines = score(skinRaw["fine_lines"]);
+  const pores = score(skinRaw["pores"]);
+  if (!parsed || !season || best.length < 6 || avoid.length < 3 || hydration === null || fineLines === null || pores === null) {
+    throw new Error(
+      "We couldn't read that photo well enough. Try again in natural light against a plain wall.",
+    );
+  }
+  const notesRaw = (skinRaw["notes"] ?? {}) as Record<string, unknown>;
+  const undertoneRaw = (str(parsed["undertone"]) ?? "neutral").toLowerCase();
+  return {
+    season,
+    undertone: ["cool", "neutral", "warm"].includes(undertoneRaw) ? undertoneRaw : "neutral",
+    best_colours: best,
+    avoid_colours: avoid,
+    rationale: str(parsed["rationale"]) ?? "",
+    skin: {
+      hydration,
+      fine_lines: fineLines,
+      pores,
+      overall: Math.round((hydration + fineLines + pores) / 3),
+      notes: {
+        hydration: str(notesRaw["hydration"]) ?? "",
+        fine_lines: str(notesRaw["fine_lines"]) ?? "",
+        pores: str(notesRaw["pores"]) ?? "",
+      },
+    },
+  };
+}
+
+function coerceItemInner(raw: Record<string, unknown>): BulkItem {
   const category = str(raw["category"])?.toLowerCase() ?? null;
   const ingredientsRaw = Array.isArray(raw["ingredients"]) ? raw["ingredients"] : [];
   const ingredients = ingredientsRaw

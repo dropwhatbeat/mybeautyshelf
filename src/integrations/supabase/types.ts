@@ -166,6 +166,45 @@ export type Database = {
         }
         Relationships: []
       }
+      skin_checks: {
+        Row: {
+          created_at: string
+          fine_lines: number
+          hydration: number
+          id: string
+          notes: Json | null
+          overall: number
+          pores: number
+          season: string | null
+          undertone: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fine_lines: number
+          hydration: number
+          id?: string
+          notes?: Json | null
+          overall: number
+          pores: number
+          season?: string | null
+          undertone?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          fine_lines?: number
+          hydration?: number
+          id?: string
+          notes?: Json | null
+          overall?: number
+          pores?: number
+          season?: string | null
+          undertone?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

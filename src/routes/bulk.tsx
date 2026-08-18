@@ -25,13 +25,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/bulk")({
   head: () => ({
     meta: [
-      { title: "Add several products at once — Shelf" },
+      { title: "Add several products at once — My Beauty Shelf" },
       {
         name: "description",
         content:
-          "Photograph your whole shelf in one go. Shelf reads every product it can and chats with you to fill the gaps.",
+          "Photograph your whole shelf in one go. Beauty Shelf reads every product it can and chats with you to fill the gaps.",
       },
-      { property: "og:title", content: "Add several products at once — Shelf" },
+      { property: "og:title", content: "Add several products at once — My Beauty Shelf" },
       {
         property: "og:description",
         content: "One photo, many products. We'll ask about anything we couldn't read.",

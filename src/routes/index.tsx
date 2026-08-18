@@ -15,12 +15,12 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your shelf — Shelf" },
+      { title: "Your shelf — My Beauty Shelf" },
       {
         name: "description",
         content: "Every skincare and makeup product you own, with freshness at a glance.",
       },
-      { property: "og:title", content: "Your shelf — Shelf" },
+      { property: "og:title", content: "Your shelf — My Beauty Shelf" },
       {
         property: "og:description",
         content: "Every skincare and makeup product you own, with freshness at a glance.",

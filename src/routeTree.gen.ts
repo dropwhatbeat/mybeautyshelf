@@ -12,11 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AddRouteImport } from './routes/add'
 import { Route as BulkRouteImport } from './routes/bulk'
-import { Route as ColourRouteImport } from './routes/colour'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as ShelfieRouteImport } from './routes/shelfie'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -39,11 +39,6 @@ const BulkRoute = BulkRouteImport.update({
   path: '/bulk',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ColourRoute = ColourRouteImport.update({
-  id: '/colour',
-  path: '/colour',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const InsightsRoute = InsightsRouteImport.update({
   id: '/insights',
   path: '/insights',
@@ -62,6 +57,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShelfieRoute = ShelfieRouteImport.update({
+  id: '/shelfie',
+  path: '/shelfie',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -102,11 +102,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/add': typeof AddRoute
   '/bulk': typeof BulkRoute
-  '/colour': typeof ColourRoute
   '/insights': typeof InsightsRoute
   '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
   '/settings': typeof SettingsRoute
+  '/shelfie': typeof ShelfieRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -118,11 +118,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/add': typeof AddRoute
   '/bulk': typeof BulkRoute
-  '/colour': typeof ColourRoute
   '/insights': typeof InsightsRoute
   '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
   '/settings': typeof SettingsRoute
+  '/shelfie': typeof ShelfieRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -135,11 +135,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/add': typeof AddRoute
   '/bulk': typeof BulkRoute
-  '/colour': typeof ColourRoute
   '/insights': typeof InsightsRoute
   '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
   '/settings': typeof SettingsRoute
+  '/shelfie': typeof ShelfieRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -153,11 +153,11 @@ export interface FileRouteTypes {
     | '/'
     | '/add'
     | '/bulk'
-    | '/colour'
     | '/insights'
     | '/mcp'
     | '/onboarding'
     | '/settings'
+    | '/shelfie'
     | '/sitemap.xml'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -169,11 +169,11 @@ export interface FileRouteTypes {
     | '/'
     | '/add'
     | '/bulk'
-    | '/colour'
     | '/insights'
     | '/mcp'
     | '/onboarding'
     | '/settings'
+    | '/shelfie'
     | '/sitemap.xml'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -185,11 +185,11 @@ export interface FileRouteTypes {
     | '/'
     | '/add'
     | '/bulk'
-    | '/colour'
     | '/insights'
     | '/mcp'
     | '/onboarding'
     | '/settings'
+    | '/shelfie'
     | '/sitemap.xml'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -202,11 +202,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AddRoute: typeof AddRoute
   BulkRoute: typeof BulkRoute
-  ColourRoute: typeof ColourRoute
   InsightsRoute: typeof InsightsRoute
   McpRoute: typeof McpRoute
   OnboardingRoute: typeof OnboardingRoute
   SettingsRoute: typeof SettingsRoute
+  ShelfieRoute: typeof ShelfieRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -238,13 +238,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BulkRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/colour': {
-      id: '/colour'
-      path: '/colour'
-      fullPath: '/colour'
-      preLoaderRoute: typeof ColourRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/insights': {
       id: '/insights'
       path: '/insights'
@@ -271,6 +264,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shelfie': {
+      id: '/shelfie'
+      path: '/shelfie'
+      fullPath: '/shelfie'
+      preLoaderRoute: typeof ShelfieRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -322,11 +322,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddRoute: AddRoute,
   BulkRoute: BulkRoute,
-  ColourRoute: ColourRoute,
   InsightsRoute: InsightsRoute,
   McpRoute: McpRoute,
   OnboardingRoute: OnboardingRoute,
   SettingsRoute: SettingsRoute,
+  ShelfieRoute: ShelfieRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
