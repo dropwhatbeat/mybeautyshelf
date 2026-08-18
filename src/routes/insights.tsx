@@ -163,7 +163,7 @@ function Insights() {
           <h2 className="font-display text-xl">Shelf gaps</h2>
           {gaps.length === 0 ? (
             <p className="mt-2 text-sm text-muted-foreground">
-              Add your concerns in Settings and we'll check your shelf against them.
+              Add your concerns in My skin profile and we'll check your shelf against them.
             </p>
           ) : (
             <ul className="mt-3 space-y-3">

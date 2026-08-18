@@ -88,7 +88,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "My Beauty Shelf — every brand on one shelf" },
       {
         property: "og:description",
-        content: "Freshness dates, ingredient clashes and colour analysis for the products you already own.",
+        content: "Freshness dates, ingredient clashes and a Shelfie skin score for the products you already own.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

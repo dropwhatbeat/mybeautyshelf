@@ -90,7 +90,7 @@ function Onboarding() {
     },
     {
       title: "Your undertone",
-      hint: "Not sure? Skip it — the colour analysis can tell you later.",
+      hint: "Not sure? Skip it — a Shelfie can tell you later.",
       body: (
         <div className="flex flex-wrap gap-2.5">
           {UNDERTONES.map((u) => (
