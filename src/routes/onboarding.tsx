@@ -176,6 +176,76 @@ function Onboarding() {
       ),
     },
     {
+      title: "A little about you",
+      hint: "This shapes what we suggest — and what we warn you about.",
+      body: (
+        <div className="space-y-7">
+          <div>
+            <p className="text-sm font-medium text-foreground">Age range</p>
+            <div className="mt-3 flex flex-wrap gap-2.5">
+              {AGE_RANGES.map((a) => (
+                <Chip key={a} label={a} selected={ageRange === a} onClick={() => setAgeRange(a)} />
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-foreground">How often do you wear SPF?</p>
+            <div className="mt-3 flex flex-wrap gap-2.5">
+              {SPF_HABITS.map((s) => (
+                <Chip key={s} label={s} selected={spfHabit === s} onClick={() => setSpfHabit(s)} />
+              ))}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "How reactive is your skin?",
+      hint: "We'll flag anything on your avoid list before you use it.",
+      body: (
+        <div className="space-y-7">
+          <div className="flex flex-wrap gap-2.5">
+            {SENSITIVITY_LEVELS.map((s) => (
+              <Chip
+                key={s}
+                label={s}
+                selected={sensitivity === s}
+                onClick={() => setSensitivity(s)}
+              />
+            ))}
+          </div>
+          <div>
+            <p className="text-sm font-medium text-foreground">Anything you avoid?</p>
+            <div className="mt-3 flex flex-wrap gap-2.5">
+              {AVOID_ITEMS.map((a) => (
+                <Chip
+                  key={a}
+                  label={a}
+                  selected={avoidList.includes(a)}
+                  onClick={() =>
+                    setAvoidList((prev) =>
+                      prev.includes(a) ? prev.filter((x) => x !== a) : [...prev, a],
+                    )
+                  }
+                />
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-foreground">Pregnant or breastfeeding?</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Some actives, like retinoids, are usually avoided then.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2.5">
+              {PREGNANCY_OPTIONS.map((p) => (
+                <Chip key={p} label={p} selected={pregnancy === p} onClick={() => setPregnancy(p)} />
+              ))}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
       title: "Your undertone",
       hint: "Not sure? Take a Shelfie and we'll read it from your photo.",
       body: (
