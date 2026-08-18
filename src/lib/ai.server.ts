@@ -248,6 +248,11 @@ Rules:
     ],
   });
   const parsed = parseJson(raw);
+  if (!parsed) {
+    throw new Error(
+      "We couldn't read that photo well enough. Try again in natural light against a plain wall.",
+    );
+  }
   const checkRaw = (parsed?.["check"] ?? {}) as Record<string, unknown>;
   const faceCount = num(checkRaw["face_count"]);
   const lighting = (str(checkRaw["lighting"]) ?? "good").toLowerCase();
