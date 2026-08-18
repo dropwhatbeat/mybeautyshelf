@@ -41,7 +41,7 @@ export function AuthCard() {
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-6 py-12">
       <p className="text-[11px] uppercase tracking-[0.3em] text-primary">Shelf</p>
       <h1 className="mt-3 font-display text-4xl leading-tight text-foreground">
-        Everything you own, finally in one place.
+        Your skincare and makeup shelf, finally in one place.
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
         Track what's fresh, what clashes, and what's actually working — across every brand on your
