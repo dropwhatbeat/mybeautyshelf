@@ -11,16 +11,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { freshnessFor } from "@/lib/freshness";
 import { useProducts, useProfile } from "@/lib/queries";
 import { cn } from "@/lib/utils";
+import doodleShelf from "@/assets/doodle-shelf.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your shelf — My Beauty Shelf" },
+      { title: "My Beauty Shelf — your skincare and makeup shelf" },
       {
         name: "description",
         content: "Every skincare and makeup product you own, with freshness at a glance.",
       },
-      { property: "og:title", content: "Your shelf — My Beauty Shelf" },
+      { property: "og:title", content: "My Beauty Shelf — your skincare and makeup shelf" },
       {
         property: "og:description",
         content: "Every skincare and makeup product you own, with freshness at a glance.",
@@ -67,7 +68,7 @@ function ShelfPage() {
   return (
     <AppShell>
       <PageHeader
-        title="Your shelf"
+        title="My Beauty Shelf"
         subtitle={
           sorted.length ? `${sorted.length} products in rotation` : "Nothing here yet"
         }
@@ -105,6 +106,14 @@ function ShelfPage() {
         </div>
       ) : sorted.length === 0 ? (
         <div className="mx-5 rounded-2xl border border-dashed border-border p-8 text-center">
+          <img
+            src={doodleShelf}
+            alt=""
+            width={1024}
+            height={768}
+            loading="lazy"
+            className="mx-auto -mt-2 mb-2 w-48 opacity-90"
+          />
           <h2 className="font-display text-xl">Start your shelf</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             Photograph a product and we'll fill in the details for you.
