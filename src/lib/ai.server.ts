@@ -6,6 +6,7 @@ export type ProductExtraction = {
   category: string | null;
   size_ml: number | null;
   pao_months: number | null;
+  expiry_date: string | null;
   ingredients: string[];
   ingredients_readable: boolean;
   notes: string | null;
@@ -102,6 +103,22 @@ function num(v: unknown): number | null {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
+/** Accepts YYYY-MM-DD (or YYYY-MM, which becomes the last day of that month). */
+function isoDate(v: unknown): string | null {
+  const s = typeof v === "string" ? v.trim() : "";
+  const full = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+  if (full) {
+    const d = new Date(`${s}T00:00:00`);
+    return Number.isNaN(d.getTime()) ? null : s;
+  }
+  const ym = /^(\d{4})-(\d{2})$/.exec(s);
+  if (ym) {
+    const last = new Date(Number(ym[1]), Number(ym[2]), 0);
+    return Number.isNaN(last.getTime()) ? null : last.toISOString().slice(0, 10);
+  }
+  return null;
+}
+
 export async function extractProductFromPhotos(
   frontImage: string,
   backImage: string | null,
@@ -110,7 +127,7 @@ export async function extractProductFromPhotos(
     {
       type: "text",
       text: `You read beauty product packaging from photos. Return ONLY strict JSON with this shape:
-{"brand": string|null, "name": string|null, "category": one of ${CATEGORIES.join("|")}|null, "size_ml": number|null, "pao_months": number|null, "ingredients": string[], "ingredients_readable": boolean, "notes": string|null}
+{"brand": string|null, "name": string|null, "category": one of ${CATEGORIES.join("|")}|null, "size_ml": number|null, "pao_months": number|null, "expiry_date": string|null, "ingredients": string[], "ingredients_readable": boolean, "notes": string|null}
 
 Rules:
 - Packaging may be in ANY language (Japanese, Korean, Chinese, French and so on). Read it in the original language, then TRANSLATE the output to English: use the official English/Latin-script brand name, and an English product name.
@@ -119,6 +136,7 @@ Rules:
 - Only report what is legibly visible. If a field is unclear, use null rather than guessing.
 - NEVER invent ingredients. If no ingredient list is legible in the photos, return "ingredients": [] and "ingredients_readable": false.
 - pao_months comes from the open-jar symbol (e.g. "12M" -> 12).
+- expiry_date is the printed expiry / best-before / "EXP" / "use by" date, returned as "YYYY-MM-DD". If only a month and year are printed (e.g. "2027/03", "03.2027", "EXP 03 27"), return "YYYY-MM" and we will treat it as the end of that month. Handle non-Latin labels too (Japanese 使用期限, Korean 사용기한, Chinese 保质期). Ambiguous or missing -> null. Never confuse it with a manufacture date (MFG / 製造).
 - size_ml: convert oz to ml if only oz is printed.
 - Keep ingredient strings as printed, one per array item, in order.`,
     },
@@ -133,7 +151,7 @@ Rules:
   const parsed = parseJson(raw);
   if (!parsed) {
     return {
-      brand: null, name: null, category: null, size_ml: null, pao_months: null,
+      brand: null, name: null, category: null, size_ml: null, pao_months: null, expiry_date: null,
       ingredients: [], ingredients_readable: false,
       notes: "We couldn't read that photo clearly — fill in what you know or retake it.",
     };
@@ -150,6 +168,7 @@ Rules:
     category: category && CATEGORIES.includes(category) ? category : null,
     size_ml: num(parsed["size_ml"]),
     pao_months: num(parsed["pao_months"]),
+    expiry_date: isoDate(parsed["expiry_date"]),
     ingredients,
     ingredients_readable: ingredients.length > 0 && parsed["ingredients_readable"] !== false,
     notes: str(parsed["notes"]),
