@@ -92,6 +92,9 @@ export async function extractProductFromPhotos(
 {"brand": string|null, "name": string|null, "category": one of ${CATEGORIES.join("|")}|null, "size_ml": number|null, "pao_months": number|null, "ingredients": string[], "ingredients_readable": boolean, "notes": string|null}
 
 Rules:
+- Packaging may be in ANY language (Japanese, Korean, Chinese, French and so on). Read it in the original language, then TRANSLATE the output to English: use the official English/Latin-script brand name, and an English product name.
+- Translate ingredients into their standard English INCI names (for example the Japanese for water becomes "Water", for glycerin becomes "Glycerin"). Keep the printed order.
+- Put the original-language product name in "notes" if you translated it.
 - Only report what is legibly visible. If a field is unclear, use null rather than guessing.
 - NEVER invent ingredients. If no ingredient list is legible in the photos, return "ingredients": [] and "ingredients_readable": false.
 - pao_months comes from the open-jar symbol (e.g. "12M" -> 12).
@@ -288,6 +291,7 @@ Return ONLY strict JSON of this shape:
 Rules:
 - One array entry per physical product, ordered left to right as they appear.
 - "position" is a short human hint for where it is, e.g. "tall white bottle, second from left".
+- Labels may be in any language; translate brand, name and ingredients into English (standard INCI names for ingredients).
 - Only report what is legibly visible. Unclear field -> null. NEVER guess or invent a brand, name or ingredient.
 - Ingredient lists are rarely legible in a group shot; return [] unless you can genuinely read them.
 - Skip objects that are not beauty products.`,
