@@ -246,31 +246,65 @@ function Onboarding() {
       ),
     },
     {
-      title: "Your undertone",
-      hint: "Not sure? Take a Shelfie and we'll read it from your photo.",
+      title: "Let's read your skin",
+      hint: "One selfie in daylight — we call it a Shelfie — fills in the rest of your profile.",
       body: (
         <div className="space-y-6">
-          <div className="flex flex-wrap gap-2.5">
-            {UNDERTONES.map((u) => (
-              <Chip key={u} label={u} selected={undertone === u} onClick={() => setUndertone(u)} />
-            ))}
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <div className="flex items-center gap-3">
+              <ScanFace className="h-5 w-5 shrink-0 text-primary" strokeWidth={1.75} />
+              <p className="text-sm font-medium text-foreground">What your Shelfie gives you</p>
+            </div>
+            <ul className="mt-3 space-y-2 text-xs leading-relaxed text-muted-foreground">
+              {[
+                "Your undertone — cool, neutral or warm",
+                "Your colour season, with best shades and colours to skip",
+                "Skin scores: hydration, fine lines, pores, redness, evenness",
+                "Oil in your T-zone and cheeks, plus an under-eye read",
+                "Skin depth and face shape, with blush and contour placement tips",
+              ].map((line) => (
+                <li key={line} className="flex gap-2">
+                  <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
+                  <span>{line}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-[11px] text-muted-foreground">
+              Your photo is only used to produce this read, and stays private to your shelf.
+            </p>
           </div>
-          <button
-            type="button"
+
+          <Button
+            className="h-12 w-full text-base"
             disabled={saving}
             onClick={() => void finish("/shelfie")}
-            className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left transition-colors hover:border-primary"
           >
-            <ScanFace className="h-5 w-5 shrink-0 text-primary" strokeWidth={1.75} />
-            <span>
-              <span className="block text-sm font-medium text-foreground">
-                Not sure? Take a Shelfie
-              </span>
-              <span className="block text-xs text-muted-foreground">
-                One selfie reads your undertone, colour season and skin scores.
-              </span>
-            </span>
-          </button>
+            Take my Shelfie
+          </Button>
+
+          {manualUndertone ? (
+            <div>
+              <p className="text-sm font-medium text-foreground">Your undertone</p>
+              <div className="mt-3 flex flex-wrap gap-2.5">
+                {UNDERTONES.map((u) => (
+                  <Chip
+                    key={u}
+                    label={u}
+                    selected={undertone === u}
+                    onClick={() => setUndertone(u)}
+                  />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setManualUndertone(true)}
+              className="w-full text-sm text-muted-foreground underline underline-offset-4"
+            >
+              I know my undertone
+            </button>
+          )}
         </div>
       ),
     },
