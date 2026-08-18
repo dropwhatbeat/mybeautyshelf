@@ -4,6 +4,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { Camera, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import { friendlyError } from "@/lib/errors";
 
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
@@ -99,7 +100,7 @@ function Shelfie() {
       void qc.invalidateQueries({ queryKey: ["skin-checks", user.id] });
       void qc.invalidateQueries({ queryKey: ["profile", user.id] });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "That didn't work — try again.");
+      toast.error(friendlyError(err, "That didn't work — try again."));
     } finally {
       setLoading(false);
     }

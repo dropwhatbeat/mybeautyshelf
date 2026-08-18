@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { Camera, Send, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import { friendlyError } from "@/lib/errors";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -128,7 +129,7 @@ function BulkAdd() {
           },
         ]);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "That didn't work — try again.");
+      toast.error(friendlyError(err, "That didn't work — try again."));
       setPhase("capture");
     }
   }
@@ -149,7 +150,7 @@ function BulkAdd() {
       }
       setTurns([...history, { role: "assistant", content: res.reply }]);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "The assistant is unavailable right now.");
+      toast.error(friendlyError(err, "The assistant is unavailable right now."));
     } finally {
       setThinking(false);
     }
@@ -190,7 +191,7 @@ function BulkAdd() {
       toast.success(`Added ${rows.length} products to your shelf.`);
       void navigate({ to: "/" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Couldn't save those products.");
+      toast.error(friendlyError(err, "Couldn't save those products."));
       setSaving(false);
     }
   }

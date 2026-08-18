@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { Camera, ImagePlus, RefreshCw, X } from "lucide-react";
 import { toast } from "sonner";
+import { friendlyError } from "@/lib/errors";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -124,7 +125,7 @@ function AddProduct() {
       });
       setPhase("confirm");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "That didn't work — try again.");
+      toast.error(friendlyError(err, "That didn't work — try again."));
       setPhase("capture");
     }
   }
@@ -155,7 +156,7 @@ function AddProduct() {
       toast.success("Added to your shelf.");
       void navigate({ to: "/product/$id", params: { id: data.id } });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Couldn't save that product.");
+      toast.error(friendlyError(err, "Couldn't save that product."));
       setSaving(false);
     }
   }
