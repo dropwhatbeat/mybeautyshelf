@@ -66,7 +66,7 @@ function Onboarding() {
     setPregnancy((v) => v ?? draft.pregnancy);
   }, []);
 
-  async function finish(to: "/add" | "/shelfie" = "/add") {
+  async function finish(to: "/add" | "/shelfie" = "/add", viaShelfie = false) {
     if (loading) return;
     if (!user) {
       saveDraft({
@@ -79,7 +79,11 @@ function Onboarding() {
         avoid_list: avoidList,
         pregnancy,
       });
-      setTeaser(true);
+      if (viaShelfie) {
+        setTeaser(true);
+        return;
+      }
+      void navigate({ to: "/auth" });
       return;
     }
     setSaving(true);
