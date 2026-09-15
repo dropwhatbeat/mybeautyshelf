@@ -78,6 +78,7 @@ function Onboarding() {
         sensitivity,
         avoid_list: avoidList,
         pregnancy,
+        next: to,
       });
       if (viaShelfie) {
         setTeaser(true);

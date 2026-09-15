@@ -173,7 +173,7 @@ function RootComponent() {
           clearDraft();
           if (error) return;
           void queryClient.invalidateQueries({ queryKey: ["profile"] });
-          void router.navigate({ to: "/shelfie" });
+          void router.navigate({ to: draft.next });
         })();
       }
     });
