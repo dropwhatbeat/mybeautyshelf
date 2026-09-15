@@ -47,7 +47,7 @@ export function LandingPage() {
         <Link to="/onboarding">Build my beauty profile</Link>
       </Button>
       <p className="mt-2 text-center text-xs text-muted-foreground">
-        Three quick taps. No account needed to start.
+        Five guided steps. No account needed to start.
       </p>
 
       <ul className="mt-10 space-y-3">

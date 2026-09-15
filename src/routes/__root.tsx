@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { toast } from "sonner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -170,9 +171,13 @@ function RootComponent() {
               onboarded: true,
             })
             .eq("id", session.user.id);
+          if (error) {
+            toast.error("Your answers are still saved. We'll try again when you sign in.");
+            return;
+          }
           clearDraft();
-          if (error) return;
           void queryClient.invalidateQueries({ queryKey: ["profile"] });
+          toast.success("Your beauty profile has been saved.");
           void router.navigate({ to: draft.next });
         })();
       }
