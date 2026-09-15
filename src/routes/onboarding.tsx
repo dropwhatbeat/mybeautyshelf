@@ -295,7 +295,7 @@ function Onboarding() {
           <Button
             className="h-12 w-full text-base"
             disabled={saving}
-            onClick={() => void finish("/shelfie")}
+            onClick={() => void finish("/shelfie", true)}
           >
             Take my Shelfie
           </Button>
@@ -362,7 +362,7 @@ function Onboarding() {
           disabled={saving}
           onClick={() => (last ? void finish("/add") : setStep(step + 1))}
         >
-          {last ? (user ? "Add your first product" : "See my beauty profile") : "Continue"}
+          {last ? (user ? "Add your first product" : "Create my account") : "Continue"}
         </Button>
         <button
           type="button"
