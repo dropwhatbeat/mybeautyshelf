@@ -1,0 +1,43 @@
+<!doctype html>
+<html><body>
+<svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Product-first customer journey">
+  <style>
+    text { font-family: var(--font-sans); fill: var(--fg-primary); }
+    .label { font-size:14px; font-weight:480; }
+    .note { font-size:12px; fill:var(--fg-secondary); }
+    .box { fill:none; stroke:var(--fg-secondary); stroke-width:1; rx:8; }
+    .accent { fill:var(--bg-accent-translucent); stroke:var(--fg-accent); stroke-width:1; rx:8; }
+    .wire { fill:none; stroke:var(--fg-secondary); stroke-width:1; }
+    .later { stroke-dasharray:4 3; }
+  </style>
+  <defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7" fill="none" stroke="var(--fg-secondary)"/></marker></defs>
+  <rect class="box" x="20" y="52" width="118" height="62"/>
+  <text class="label" x="79" y="78" text-anchor="middle">Landing</text>
+  <text class="note" x="79" y="98" text-anchor="middle">Build my shelf</text>
+  <path class="wire" d="M138 83 H171" marker-end="url(#arrow)"/>
+  <rect class="box" x="178" y="52" width="118" height="62"/>
+  <text class="label" x="237" y="78" text-anchor="middle">Account</text>
+  <text class="note" x="237" y="98" text-anchor="middle">Google or email</text>
+  <path class="wire" d="M296 83 H329" marker-end="url(#arrow)"/>
+  <rect class="accent" x="336" y="52" width="128" height="62"/>
+  <text class="label" x="400" y="78" text-anchor="middle">Add product</text>
+  <text class="note" x="400" y="98" text-anchor="middle">Scan the label</text>
+  <path class="wire" d="M464 83 H497" marker-end="url(#arrow)"/>
+  <rect class="box" x="504" y="52" width="116" height="62"/>
+  <text class="label" x="562" y="78" text-anchor="middle">Shelf</text>
+  <text class="note" x="562" y="98" text-anchor="middle">Freshness status</text>
+
+  <path class="wire" d="M562 114 V161 H410" marker-end="url(#arrow)"/>
+  <rect class="box" x="284" y="168" width="252" height="62"/>
+  <text class="label" x="410" y="194" text-anchor="middle">Insights</text>
+  <text class="note" x="410" y="214" text-anchor="middle">Expiry reminders + conflict checks</text>
+
+  <path class="wire later" d="M284 199 H171" marker-end="url(#arrow)"/>
+  <rect class="box" x="20" y="168" width="144" height="62"/>
+  <text class="label" x="92" y="194" text-anchor="middle">Optional profile</text>
+  <text class="note" x="92" y="214" text-anchor="middle">Personalize later</text>
+
+  <rect x="20" y="260" width="600" height="1" fill="var(--border-translucent)"/>
+  <text class="note" x="20" y="282">Shelfie stays in its standalone tab, outside this first-use journey.</text>
+</svg>
+</body></html>
