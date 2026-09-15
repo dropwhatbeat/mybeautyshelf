@@ -1,10 +1,19 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, Lock, ScanFace } from "lucide-react";
+import { ChevronLeft, ScanFace } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Chip } from "@/components/Chip";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
 import { CONCERNS } from "@/lib/actives";
 import { readDraft, saveDraft } from "@/lib/onboarding-draft";
@@ -16,8 +25,8 @@ import {
   SPF_HABITS,
 } from "@/lib/profile-options";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import type { Database } from "@/integrations/supabase/types";
-import doodleFace from "@/assets/doodle-face.png";
 
 type SkinType = Database["public"]["Enums"]["skin_type"];
 type Undertone = Database["public"]["Enums"]["undertone"];
@@ -29,9 +38,9 @@ export const Route = createFileRoute("/onboarding")({
   head: () => ({
     meta: [
       { title: "Set up your skin profile — My Beauty Shelf" },
-      { name: "description", content: "Three quick taps: skin type, concerns and undertone." },
+      { name: "description", content: "Build your beauty profile in five quick, guided steps." },
       { property: "og:title", content: "Set up your skin profile — My Beauty Shelf" },
-      { property: "og:description", content: "Three quick taps: skin type, concerns and undertone." },
+      { property: "og:description", content: "Build your beauty profile in five quick, guided steps." },
     ],
   }),
   component: Onboarding,
@@ -50,8 +59,12 @@ function Onboarding() {
   const [avoidList, setAvoidList] = useState<string[]>([]);
   const [pregnancy, setPregnancy] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [teaser, setTeaser] = useState(false);
   const [manualUndertone, setManualUndertone] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [accountNext, setAccountNext] = useState<"/add" | "/shelfie">("/add");
+  const [email, setEmail] = useState("");
+  const [authBusy, setAuthBusy] = useState(false);
+  const [linkSent, setLinkSent] = useState(false);
 
   useEffect(() => {
     const draft = readDraft();
@@ -66,25 +79,27 @@ function Onboarding() {
     setPregnancy((v) => v ?? draft.pregnancy);
   }, []);
 
-  async function finish(to: "/add" | "/shelfie" = "/add", viaShelfie = false) {
+  function draftFor(to: "/add" | "/shelfie") {
+    return {
+      skin_type: skinType,
+      concerns,
+      undertone,
+      age_range: ageRange,
+      spf_habit: spfHabit,
+      sensitivity,
+      avoid_list: avoidList,
+      pregnancy,
+      next: to,
+    };
+  }
+
+  async function finish(to: "/add" | "/shelfie" = "/add") {
     if (loading) return;
     if (!user) {
-      saveDraft({
-        skin_type: skinType,
-        concerns,
-        undertone,
-        age_range: ageRange,
-        spf_habit: spfHabit,
-        sensitivity,
-        avoid_list: avoidList,
-        pregnancy,
-        next: to,
-      });
-      if (viaShelfie) {
-        setTeaser(true);
-        return;
-      }
-      void navigate({ to: "/auth" });
+      saveDraft(draftFor(to));
+      setAccountNext(to);
+      setLinkSent(false);
+      setAccountOpen(true);
       return;
     }
     setSaving(true);
@@ -110,56 +125,30 @@ function Onboarding() {
     void navigate({ to });
   }
 
-  if (teaser) {
-    return (
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-6 pb-10 pt-12">
-        <p className="text-[11px] uppercase tracking-[0.3em] text-primary">My Beauty Shelf</p>
-        <h1 className="mt-3 font-display text-3xl leading-tight">Your skin profile is ready.</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {skinType ? `${skinType} skin` : "Skin profile"}
-          {concerns.length ? ` · ${concerns.slice(0, 3).join(", ")}` : ""}
-          {undertone ? ` · ${undertone} undertone` : ""}
-        </p>
+  async function emailSignIn(event: React.FormEvent) {
+    event.preventDefault();
+    setAuthBusy(true);
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin, shouldCreateUser: true },
+    });
+    setAuthBusy(false);
+    if (error) {
+      toast.error("We couldn't send the link. Try again.");
+      return;
+    }
+    setLinkSent(true);
+  }
 
-        <div className="relative mt-8 overflow-hidden rounded-2xl border border-border bg-card p-6">
-          <div className="pointer-events-none select-none blur-[6px]" aria-hidden="true">
-            <img src={doodleFace} alt="" width={768} height={768} className="mx-auto w-24" />
-            <div className="mt-4 space-y-3">
-              {["Hydration", "Fine lines", "Pores"].map((label) => (
-                <div key={label}>
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>{label}</span>
-                    <span>__ / 100</span>
-                  </div>
-                  <div className="mt-1 h-2 rounded-full bg-muted">
-                    <div className="h-2 w-2/3 rounded-full bg-primary" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-card/60 px-6 text-center">
-            <Lock className="h-5 w-5 text-primary" strokeWidth={1.75} />
-            <p className="font-display text-lg leading-snug">
-              Create an account to unlock your scores
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Then one Shelfie scores hydration, fine lines and pores, and reads your colour season.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-auto space-y-3 pt-10">
-          <Button asChild className="h-12 w-full text-base">
-            <Link to="/auth">Create account to unlock</Link>
-          </Button>
-          <p className="text-center text-xs text-muted-foreground">
-            No password — a magic link or Google. Your answers are saved to your shelf as soon as
-            you sign in.
-          </p>
-        </div>
-      </div>
-    );
+  async function googleSignIn() {
+    setAuthBusy(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) {
+      setAuthBusy(false);
+      toast.error("Google sign-in failed. Try again.");
+    }
   }
 
   const steps = [
@@ -296,7 +285,7 @@ function Onboarding() {
           <Button
             className="h-12 w-full text-base"
             disabled={saving}
-            onClick={() => void finish("/shelfie", true)}
+            onClick={() => void finish("/shelfie")}
           >
             Take my Shelfie
           </Button>
@@ -358,21 +347,86 @@ function Onboarding() {
       <div className="mt-8">{current.body}</div>
 
       <div className="mt-auto space-y-3 pt-12">
-        <Button
-          className="h-12 w-full text-base"
-          disabled={saving}
-          onClick={() => (last ? void finish("/add") : setStep(step + 1))}
-        >
-          {last ? (user ? "Add your first product" : "Create my account") : "Continue"}
-        </Button>
-        <button
-          type="button"
-          onClick={() => (last ? void finish("/add") : setStep(step + 1))}
-          className="w-full text-sm text-muted-foreground underline underline-offset-4"
-        >
-          Skip
-        </button>
+        {last ? (
+          <Button
+            variant="ghost"
+            className="h-11 w-full text-sm text-muted-foreground"
+            disabled={saving}
+            onClick={() => void finish("/add")}
+          >
+            Continue without Shelfie
+          </Button>
+        ) : (
+          <Button className="h-12 w-full text-base" onClick={() => setStep(step + 1)}>
+            Continue
+          </Button>
+        )}
       </div>
+
+      <Sheet open={accountOpen} onOpenChange={setAccountOpen}>
+        <SheetContent
+          side="bottom"
+          className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-2xl px-6 pb-8 pt-7"
+        >
+          <SheetHeader className="pr-7 text-left">
+            <p className="text-[11px] uppercase tracking-[0.3em] text-primary">My Beauty Shelf</p>
+            <SheetTitle className="font-display text-2xl leading-tight">
+              Your beauty profile is ready
+            </SheetTitle>
+            <SheetDescription className="leading-relaxed">
+              Your answers are saved on this device. Create an account to keep them and {accountNext === "/shelfie" ? "continue to your Shelfie" : "start adding products to your shelf"}.
+            </SheetDescription>
+          </SheetHeader>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-6 h-12 w-full text-base"
+            disabled={authBusy}
+            onClick={() => void googleSignIn()}
+          >
+            Continue with Google
+          </Button>
+
+          <div className="my-5 flex items-center gap-3" aria-hidden="true">
+            <span className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted-foreground">or use email</span>
+            <span className="h-px flex-1 bg-border" />
+          </div>
+
+          <form onSubmit={(event) => void emailSignIn(event)} className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="onboarding-email">Email</Label>
+              <Input
+                id="onboarding-email"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  setLinkSent(false);
+                }}
+                className="h-12"
+              />
+            </div>
+            <Button type="submit" className="h-12 w-full text-base" disabled={authBusy}>
+              {authBusy ? "Sending…" : linkSent ? "Resend sign-in link" : "Email me a sign-in link"}
+            </Button>
+          </form>
+
+          {linkSent ? (
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              Link sent to {email}. Open it on this device and your saved profile will be waiting.
+            </p>
+          ) : (
+            <p className="mt-4 text-center text-xs text-muted-foreground">
+              No password needed. Close this to review your answers.
+            </p>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
