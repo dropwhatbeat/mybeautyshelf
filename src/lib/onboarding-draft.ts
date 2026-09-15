@@ -12,6 +12,7 @@ export type OnboardingDraft = {
   sensitivity: string | null;
   avoid_list: string[];
   pregnancy: string | null;
+  next: "/add" | "/shelfie";
 };
 
 const KEY = "shelf-onboarding-draft";
@@ -38,6 +39,7 @@ export function readDraft(): OnboardingDraft | null {
       sensitivity: parsed.sensitivity ?? null,
       avoid_list: Array.isArray(parsed.avoid_list) ? parsed.avoid_list : [],
       pregnancy: parsed.pregnancy ?? null,
+      next: parsed.next === "/shelfie" ? "/shelfie" : "/add",
     };
   } catch {
     return null;
