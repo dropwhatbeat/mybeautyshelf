@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { freshnessFor } from "@/lib/freshness";
-import { useProducts, useProfile } from "@/lib/queries";
+import { useProducts } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 import doodleShelf from "@/assets/doodle-shelf.png";
 
@@ -43,7 +43,6 @@ const SORTS: { key: Sort; label: string }[] = [
 
 function ShelfPage() {
   const { user, loading } = useAuth();
-  const { data: profile } = useProfile(user?.id);
   const { data: products, isLoading } = useProducts(user?.id);
   const [sort, setSort] = useState<Sort>("expiring");
 
