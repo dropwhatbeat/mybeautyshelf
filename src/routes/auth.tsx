@@ -4,7 +4,7 @@ import { AuthCard } from "@/components/AuthCard";
 
 const TITLE = "Sign in — My Beauty Shelf";
 const DESCRIPTION =
-  "Sign in with a magic link or Google to save your shelf, skin profile and Shelfie scores.";
+  "Sign in with a magic link or Google to save products, track expiry dates and check routine conflicts.";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
