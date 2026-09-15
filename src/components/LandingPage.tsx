@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { CalendarClock, ScanFace, Sparkles } from "lucide-react";
+import { CalendarClock, Camera, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import doodleBottle from "@/assets/doodle-bottle.png";
 import doodleShelf from "@/assets/doodle-shelf.png";
+import { saveAuthIntent } from "@/lib/auth-intent";
 
 const FEATURES = [
   {
@@ -17,9 +18,9 @@ const FEATURES = [
     body: "Spot clashes like retinol with acids or vitamin C before they show up on your face.",
   },
   {
-    icon: ScanFace,
-    title: "Shelfie skin score",
-    body: "One selfie scores hydration, fine lines and pores, and reads your colour season.",
+    icon: Camera,
+    title: "Add products in a snap",
+    body: "Photograph the label and we'll pull in the product details, ingredients and expiry information.",
   },
 ];
 
@@ -39,15 +40,17 @@ export function LandingPage() {
         Your skincare and makeup shelf.
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        Track what's fresh, what clashes, and what's actually working — across every brand on your
-        shelf.
+        Know what's fresh, what expires next, and which products are better kept apart — across
+        every brand on your shelf.
       </p>
 
       <Button asChild className="mt-7 h-12 w-full text-base">
-        <Link to="/onboarding">Build my beauty profile</Link>
+        <Link to="/auth" onClick={() => saveAuthIntent("/add")}>
+          Build my beauty shelf
+        </Link>
       </Button>
       <p className="mt-2 text-center text-xs text-muted-foreground">
-        Five guided steps. No account needed to start.
+        No password needed — continue with Google or an email link.
       </p>
 
       <ul className="mt-10 space-y-3">

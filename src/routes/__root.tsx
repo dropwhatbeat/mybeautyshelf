@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { clearDraft, readDraft } from "@/lib/onboarding-draft";
+import { takeAuthIntent } from "@/lib/auth-intent";
 
 function NotFoundComponent() {
   return (
@@ -155,7 +156,11 @@ function RootComponent() {
 
       if (event !== "SIGNED_OUT" && session?.user) {
         const draft = readDraft();
-        if (!draft) return;
+        if (!draft) {
+          const intent = takeAuthIntent();
+          if (intent) void router.navigate({ to: intent });
+          return;
+        }
         void (async () => {
           const { error } = await supabase
             .from("profiles")

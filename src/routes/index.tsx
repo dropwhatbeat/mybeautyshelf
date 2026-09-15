@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 
 import { AppShell, PageHeader } from "@/components/AppShell";
@@ -26,6 +26,8 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Every skincare and makeup product you own, with freshness at a glance.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ShelfPage,
@@ -41,14 +43,9 @@ const SORTS: { key: Sort; label: string }[] = [
 
 function ShelfPage() {
   const { user, loading } = useAuth();
-  const navigate = useNavigate();
   const { data: profile } = useProfile(user?.id);
   const { data: products, isLoading } = useProducts(user?.id);
   const [sort, setSort] = useState<Sort>("expiring");
-
-  useEffect(() => {
-    if (profile && !profile.onboarded) void navigate({ to: "/onboarding" });
-  }, [profile, navigate]);
 
   const sorted = useMemo(() => {
     const list = (products ?? []).filter((p) => p.status === "active");

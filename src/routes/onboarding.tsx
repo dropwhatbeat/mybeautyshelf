@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, ScanFace } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -29,18 +29,17 @@ import { lovable } from "@/integrations/lovable/index";
 import type { Database } from "@/integrations/supabase/types";
 
 type SkinType = Database["public"]["Enums"]["skin_type"];
-type Undertone = Database["public"]["Enums"]["undertone"];
-
 const SKIN_TYPES: SkinType[] = ["dry", "oily", "combination", "normal", "sensitive"];
-const UNDERTONES: Undertone[] = ["cool", "neutral", "warm"];
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
     meta: [
       { title: "Set up your skin profile — My Beauty Shelf" },
-      { name: "description", content: "Build your beauty profile in five quick, guided steps." },
+      { name: "description", content: "Build your optional skin profile in four quick, guided steps." },
       { property: "og:title", content: "Set up your skin profile — My Beauty Shelf" },
-      { property: "og:description", content: "Build your beauty profile in five quick, guided steps." },
+      { property: "og:description", content: "Build your optional skin profile in four quick, guided steps." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Onboarding,
@@ -52,16 +51,13 @@ function Onboarding() {
   const [step, setStep] = useState(0);
   const [skinType, setSkinType] = useState<SkinType | null>(null);
   const [concerns, setConcerns] = useState<string[]>([]);
-  const [undertone, setUndertone] = useState<Undertone | null>(null);
   const [ageRange, setAgeRange] = useState<string | null>(null);
   const [spfHabit, setSpfHabit] = useState<string | null>(null);
   const [sensitivity, setSensitivity] = useState<string | null>(null);
   const [avoidList, setAvoidList] = useState<string[]>([]);
   const [pregnancy, setPregnancy] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [manualUndertone, setManualUndertone] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
-  const [accountNext, setAccountNext] = useState<"/add" | "/shelfie">("/add");
   const [email, setEmail] = useState("");
   const [authBusy, setAuthBusy] = useState(false);
   const [linkSent, setLinkSent] = useState(false);
@@ -71,7 +67,6 @@ function Onboarding() {
     if (!draft) return;
     setSkinType((v) => v ?? draft.skin_type);
     setConcerns((v) => (v.length ? v : draft.concerns));
-    setUndertone((v) => v ?? draft.undertone);
     setAgeRange((v) => v ?? draft.age_range);
     setSpfHabit((v) => v ?? draft.spf_habit);
     setSensitivity((v) => v ?? draft.sensitivity);
@@ -79,25 +74,24 @@ function Onboarding() {
     setPregnancy((v) => v ?? draft.pregnancy);
   }, []);
 
-  function draftFor(to: "/add" | "/shelfie") {
+  function draftFor() {
     return {
       skin_type: skinType,
       concerns,
-      undertone,
+      undertone: null,
       age_range: ageRange,
       spf_habit: spfHabit,
       sensitivity,
       avoid_list: avoidList,
       pregnancy,
-      next: to,
+      next: "/add" as const,
     };
   }
 
-  async function finish(to: "/add" | "/shelfie" = "/add") {
+  async function finish() {
     if (loading) return;
     if (!user) {
-      saveDraft(draftFor(to));
-      setAccountNext(to);
+      saveDraft(draftFor());
       setLinkSent(false);
       setAccountOpen(true);
       return;
@@ -108,7 +102,6 @@ function Onboarding() {
       .update({
         skin_type: skinType,
         concerns,
-        undertone,
         age_range: ageRange,
         spf_habit: spfHabit,
         sensitivity,
@@ -122,7 +115,7 @@ function Onboarding() {
       toast.error("Couldn't save that — try again.");
       return;
     }
-    void navigate({ to });
+    void navigate({ to: "/add" });
   }
 
   async function emailSignIn(event: React.FormEvent) {
@@ -253,69 +246,6 @@ function Onboarding() {
         </div>
       ),
     },
-    {
-      title: "Let's read your skin",
-      hint: "One selfie in daylight — we call it a Shelfie — fills in the rest of your profile.",
-      body: (
-        <div className="space-y-6">
-          <div className="rounded-2xl border border-border bg-card p-4">
-            <div className="flex items-center gap-3">
-              <ScanFace className="h-5 w-5 shrink-0 text-primary" strokeWidth={1.75} />
-              <p className="text-sm font-medium text-foreground">What your Shelfie gives you</p>
-            </div>
-            <ul className="mt-3 space-y-2 text-xs leading-relaxed text-muted-foreground">
-              {[
-                "Your undertone — cool, neutral or warm",
-                "Your colour season, with best shades and colours to skip (beta)",
-                "Skin scores: hydration, fine lines, pores, redness, evenness",
-                "Oil in your T-zone and cheeks, plus an under-eye read",
-                "Skin depth and face shape, with blush and contour placement tips",
-              ].map((line) => (
-                <li key={line} className="flex gap-2">
-                  <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
-                  <span>{line}</span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3 text-[11px] text-muted-foreground">
-              Your photo is only used to produce this read, and stays private to your shelf.
-            </p>
-          </div>
-
-          <Button
-            className="h-12 w-full text-base"
-            disabled={saving}
-            onClick={() => void finish("/shelfie")}
-          >
-            Take my Shelfie
-          </Button>
-
-          {manualUndertone ? (
-            <div>
-              <p className="text-sm font-medium text-foreground">Your undertone</p>
-              <div className="mt-3 flex flex-wrap gap-2.5">
-                {UNDERTONES.map((u) => (
-                  <Chip
-                    key={u}
-                    label={u}
-                    selected={undertone === u}
-                    onClick={() => setUndertone(u)}
-                  />
-                ))}
-              </div>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setManualUndertone(true)}
-              className="w-full text-sm text-muted-foreground underline underline-offset-4"
-            >
-              I know my undertone
-            </button>
-          )}
-        </div>
-      ),
-    },
   ];
 
   const current = steps[step]!;
@@ -348,13 +278,8 @@ function Onboarding() {
 
       <div className="mt-auto space-y-3 pt-12">
         {last ? (
-          <Button
-            variant="ghost"
-            className="h-11 w-full text-sm text-muted-foreground"
-            disabled={saving}
-            onClick={() => void finish("/add")}
-          >
-            Continue without Shelfie
+          <Button className="h-12 w-full text-base" disabled={saving} onClick={() => void finish()}>
+            {saving ? "Saving…" : "Save profile and add a product"}
           </Button>
         ) : (
           <Button className="h-12 w-full text-base" onClick={() => setStep(step + 1)}>
@@ -374,7 +299,7 @@ function Onboarding() {
               Your beauty profile is ready
             </SheetTitle>
             <SheetDescription className="leading-relaxed">
-              Your answers are saved on this device. Create an account to keep them and {accountNext === "/shelfie" ? "continue to your Shelfie" : "start adding products to your shelf"}.
+              Your answers are saved on this device. Create an account to keep them and start adding products to your shelf.
             </SheetDescription>
           </SheetHeader>
 
